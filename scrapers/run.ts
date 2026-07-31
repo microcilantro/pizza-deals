@@ -1,49 +1,101 @@
 /**
- * Manual scraper entry point.
+ * Daily scrape entry point.
  *
- *   npx tsx scrapers/run.ts dominos
+ *   npx tsx scrapers/run.ts             # all chains
+ *   npx tsx scrapers/run.ts dominos     # one chain
  *
- * Prints a summary and exits non-zero on failure so a scheduled job can alert on it.
- * Persistence and staleness marking are deliberately not here — that is step 6, and
- * keeping the scraper free of database access is what lets it be tested without one.
+ * Scrapes, merges into the newest snapshot, and writes a new dated snapshot file. The
+ * workflow commits that file and rebuilds the site.
+ *
+ * Exit codes matter to the scheduled job:
+ *   0  at least one chain produced usable data
+ *   1  every chain failed — the snapshot still carries yesterday's data, marked stale
+ *   2  bad invocation
  */
-import { chromium } from 'playwright';
+import { chromium, type Browser } from 'playwright';
+import { seedSnapshot } from '@/lib/snapshot/fromSeed';
+import { loadLatestSnapshot, writeSnapshot } from '@/lib/snapshot/load';
+import { mergeScrape } from '@/lib/snapshot/merge';
 import { scrapeDominos } from './dominos';
 import type { ScrapeResult } from './types';
 
-const SCRAPERS: Record<string, (browser: import('playwright').Browser, o: { artifactDir: string }) => Promise<ScrapeResult>> = {
+type Scraper = (browser: Browser, options: { artifactDir: string }) => Promise<ScrapeResult>;
+
+const SCRAPERS: Record<string, Scraper> = {
   dominos: scrapeDominos,
 };
 
 async function main() {
-  const requested = process.argv[2] ?? 'dominos';
-  const scraper = SCRAPERS[requested];
-  if (!scraper) {
-    console.error(`Unknown chain "${requested}". Known: ${Object.keys(SCRAPERS).join(', ')}`);
+  const requested = process.argv.slice(2).filter((a) => !a.startsWith('-'));
+  const chains = requested.length > 0 ? requested : Object.keys(SCRAPERS);
+
+  const unknown = chains.filter((c) => !SCRAPERS[c]);
+  if (unknown.length > 0) {
+    console.error(
+      `Unknown chain(s): ${unknown.join(', ')}. Known: ${Object.keys(SCRAPERS).join(', ')}`,
+    );
     process.exit(2);
   }
 
   const artifactDir = process.env.SCRAPER_ARTIFACT_DIR ?? 'scraper-artifacts';
   const browser = await chromium.launch();
+  const results: ScrapeResult[] = [];
 
   try {
-    const result = await scraper(browser, { artifactDir });
-
-    console.log(`\n[${result.chain}] status=${result.status}`);
-    console.log(`  sizes:    ${result.sizes.length}`);
-    console.log(`  deals:    ${result.deals.length}`);
-    console.log(`  unparsed: ${result.unparsed.length}`);
-    for (const u of result.unparsed) console.log(`    - ${u.reason} :: ${u.raw.slice(0, 90)}`);
-    for (const e of result.errors) console.log(`  ERROR: ${e}`);
-    for (const s of result.screenshotPaths) console.log(`  artifact: ${s}`);
-
-    process.exit(result.status === 'failed' ? 1 : 0);
+    for (const chain of chains) {
+      // Each chain is isolated: a crash in one must not stop the others, which is the
+      // whole reason the scrapers are separate modules.
+      try {
+        results.push(await SCRAPERS[chain]!(browser, { artifactDir }));
+      } catch (error) {
+        console.error(`[${chain}] crashed outside its own error handling:`, error);
+        results.push({
+          chain,
+          status: 'failed',
+          startedAt: new Date(),
+          finishedAt: new Date(),
+          sizes: [],
+          crusts: [],
+          menuPrices: [],
+          deals: [],
+          unparsed: [],
+          errors: [error instanceof Error ? error.message : String(error)],
+          screenshotPaths: [],
+        });
+      }
+    }
   } finally {
     await browser.close();
   }
+
+  const previous = (await loadLatestSnapshot()) ?? seedSnapshot();
+  const snapshot = mergeScrape(previous, results, {
+    now: new Date(),
+    pricingLocale: previous.pricingLocale,
+    chains: previous.chains,
+  });
+  const file = await writeSnapshot(snapshot);
+
+  console.log(`\nWrote ${file}`);
+  for (const status of snapshot.chainStatus) {
+    const deals = snapshot.deals.filter((d) => d.chain === status.chain && d.active);
+    const stale = deals.filter((d) => d.stale).length;
+    console.log(
+      `  ${status.chain.padEnd(12)} ${status.status.padEnd(8)} ` +
+        `${deals.length} active${stale > 0 ? `, ${stale} stale` : ''}`,
+    );
+    for (const error of status.errors) console.log(`      ERROR: ${error}`);
+    for (const u of status.unparsed) console.log(`      unparsed: ${u.reason}`);
+  }
+
+  const anyUsable = results.some((r) => r.status !== 'failed');
+  if (!anyUsable) {
+    console.error('\nEvery chain failed. Snapshot retains the previous data, marked stale.');
+  }
+  process.exit(anyUsable ? 0 : 1);
 }
 
 main().catch((error) => {
-  console.error('Scraper crashed:', error);
+  console.error('Scrape run crashed:', error);
   process.exit(1);
 });

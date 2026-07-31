@@ -1,29 +1,32 @@
 import 'server-only';
-import { seedDataset } from '@/db/seed/dataset';
-import { seedDeliveryFees, seedToDeals } from '@/db/seed/toDeals';
+import { seedDeliveryFees } from '@/seed/toDeals';
+import { seedDataset } from '@/seed/dataset';
+import { loadLatestSnapshot } from '@/lib/snapshot/load';
+import { seedSnapshot } from '@/lib/snapshot/fromSeed';
+import type { Snapshot } from '@/lib/snapshot/types';
 import type { Deal } from '@/lib/normalize/types';
 
 /**
- * The UI's single source of deals.
+ * The UI's single source of deals: the newest snapshot in `data/snapshots/`.
  *
- * Reads Postgres when DATABASE_URL is configured and falls back to the seed dataset
- * otherwise, so the interface can be built and reviewed before a database exists. The
- * chosen source is returned, not hidden — the page renders a banner saying which one it
- * is, because "these are unverified hand-entered prices" is something a user comparing
- * real money deserves to see.
+ * Read at build time — the site is a static export, so there is no server at read time.
+ * The daily job scrapes, merges into a new snapshot, commits it, and triggers a rebuild.
+ * If no snapshot exists yet, the hand-entered seed stands in.
+ *
+ * The chosen source is returned rather than hidden, because the page renders a banner
+ * saying whether these prices were scraped or entered by hand. Someone comparing real
+ * money deserves to know which.
  */
 
-export type DealSource = 'database' | 'seed';
+export type DealSource = 'snapshot' | 'seed';
 
 export interface DealFeed {
   deals: Deal[];
   deliveryFees: Record<string, number>;
   source: DealSource;
-  /** Whether any row in the feed is unverified against a chain's own page. */
   hasUnverifiedData: boolean;
   capturedAt: string;
   pricingLocale: string;
-  /** Per-chain scraper health, for the staleness indicator. */
   chainStatus: ChainStatus[];
 }
 
@@ -31,162 +34,86 @@ export interface ChainStatus {
   chain: string;
   displayName: string;
   lastVerifiedAt: Date;
+  /** Set by the scraper or the merge step; age-based staleness is decided in the browser. */
   stale: boolean;
 }
 
 export async function getDealFeed(): Promise<DealFeed> {
-  if (process.env.DATABASE_URL) {
-    try {
-      return await readFromDatabase();
-    } catch (error) {
-      // A database that is configured but unreachable must not blank the page. Fall
-      // back to the seed and let the banner say the data is not live.
-      console.error('[deals] database read failed, falling back to seed:', error);
-    }
-  }
-  return readFromSeed();
+  const snapshot = await loadLatestSnapshot();
+  return snapshot ? fromSnapshot(snapshot, 'snapshot') : fromSnapshot(seedSnapshot(), 'seed');
 }
 
-function readFromSeed(): DealFeed {
-  const deals = seedToDeals(seedDataset);
-  const capturedAt = new Date(`${seedDataset.capturedAt}T00:00:00Z`);
+function fromSnapshot(snapshot: Snapshot, source: DealSource): DealFeed {
+  // Inactive deals are kept in the file as a historical record but are not shown.
+  const active = snapshot.deals.filter((d) => d.active);
 
-  return {
-    deals,
-    deliveryFees: seedDeliveryFees(seedDataset),
-    source: 'seed',
-    hasUnverifiedData: true,
-    capturedAt: seedDataset.capturedAt,
-    pricingLocale: seedDataset.pricingLocale,
-    chainStatus: seedDataset.chains.map((chain) => ({
-      chain: chain.slug,
-      displayName: chain.displayName,
-      lastVerifiedAt: capturedAt,
-      // Age-based staleness is decided in the browser (see FreshnessBar): computing it
-      // here would freeze at build time on a static export. This flag means only "the
-      // scraper itself marked this stale".
-      stale: false,
-    })),
-  };
-}
-
-/**
- * NOTE: unexercised in the current environment — no database has been provisioned, and
- * this sandbox cannot reach one. The shape mirrors `db/seed/seed.ts` exactly, which is
- * the tested write path, but treat this as unverified until it runs against real Neon.
- */
-async function readFromDatabase(): Promise<DealFeed> {
-  const [{ neon }, { drizzle }, { eq }, schema] = await Promise.all([
-    import('@neondatabase/serverless'),
-    import('drizzle-orm/neon-http'),
-    import('drizzle-orm'),
-    import('@/db/schema'),
-  ]);
-
-  const db = drizzle(neon(process.env.DATABASE_URL!), { schema });
-
-  const rows = await db
-    .select()
-    .from(schema.deals)
-    .where(eq(schema.deals.active, true));
-
-  const chainRows = await db.select().from(schema.chains);
-  const chainById = new Map(chainRows.map((c) => [c.id, c]));
-
-  const pizzaItems = await db.select().from(schema.dealPizzaItems);
-  const otherItems = await db.select().from(schema.dealOtherItems);
-  const componentRows = await db.select().from(schema.componentValues);
-  const menuPriceRows = await db.select().from(schema.menuPizzaPrices);
-  const feeRows = await db.select().from(schema.deliveryFeeObservations);
-
-  const componentById = new Map(componentRows.map((c) => [c.id, c]));
-  const menuPriceById = new Map(menuPriceRows.map((m) => [m.id, m]));
-  const crustRows = await db.select().from(schema.crustOptions);
-  const crustById = new Map(crustRows.map((c) => [c.id, c]));
-
-  const deals: Deal[] = rows.map((row) => {
-    const chain = chainById.get(row.chainId);
-    return {
-      id: row.id,
-      chain: chain?.slug ?? String(row.chainId),
-      dealName: row.dealName,
-      kind: row.kind,
-      fulfillment: row.fulfillment,
-      priceUsd: row.priceUsd === null ? null : Number(row.priceUsd),
-      discountPercent: row.discountPercent === null ? null : Number(row.discountPercent),
-      discountScope: row.discountScope,
-      pricingLocale: row.pricingLocale,
-      pizzaItems: pizzaItems
-        .filter((i) => i.dealId === row.id)
-        .map((i) => {
-          const crust = crustById.get(i.crustOptionId);
-          const menuPrice = i.menuPriceId ? menuPriceById.get(i.menuPriceId) : undefined;
-          return {
-            quantity: i.quantity,
-            shape:
-              i.shape === 'round'
-                ? ({ kind: 'round', diameterIn: Number(i.diameterIn) } as const)
-                : ({
-                    kind: 'rect',
-                    lengthIn: Number(i.lengthIn),
-                    widthIn: Number(i.widthIn),
-                  } as const),
-            sizeLabel: i.sizeLabel,
-            crust: { name: crust?.crustName ?? 'Unknown', class: crust?.crustClass ?? 'standard' },
-            toppingCount: i.toppingCount,
-            toppingPolicy: i.toppingPolicy,
-            premiumToppings: i.premiumToppings,
-            menuPriceUsd: menuPrice ? Number(menuPrice.menuPriceUsd) : null,
-          };
-        }),
-      otherItems: otherItems
-        .filter((i) => i.dealId === row.id)
-        .map((i) => {
-          const component = i.componentValueId ? componentById.get(i.componentValueId) : undefined;
-          return {
-            quantity: i.quantity,
-            category: i.category,
-            descriptor: i.descriptor,
-            menuPriceUsd: component ? Number(component.menuPriceUsd) : null,
-          };
-        }),
-      promoCode: row.promoCode,
-      sourceUrl: row.sourceUrl,
-      stale: row.stale,
-      lastVerifiedAt: row.lastVerifiedAt,
-    };
-  });
-
-  // Latest observed fee per chain.
-  const deliveryFees: Record<string, number> = {};
-  for (const fee of feeRows) {
-    const slug = chainById.get(fee.chainId)?.slug;
-    if (slug) deliveryFees[slug] = Number(fee.feeUsd);
-  }
-
-  const latestVerified = rows.reduce<Date>(
-    (latest, r) => (r.lastVerifiedAt > latest ? r.lastVerifiedAt : latest),
-    new Date(0),
+  const componentPrices = new Map(
+    snapshot.componentValues.map((c) => [`${c.chain}|${c.descriptor}`, c.menuPriceUsd]),
   );
 
+  const deals: Deal[] = active.map((deal, index) => ({
+    id: index + 1,
+    chain: deal.chain,
+    dealName: deal.dealName,
+    kind: deal.kind,
+    fulfillment: deal.fulfillment,
+    priceUsd: deal.priceUsd,
+    discountPercent: deal.discountPercent,
+    discountScope: deal.discountScope,
+    pricingLocale: snapshot.pricingLocale,
+    pizzaItems: deal.pizzaItems.map((item) => ({
+      quantity: item.quantity,
+      shape:
+        item.shape === 'round'
+          ? ({ kind: 'round', diameterIn: item.diameterIn ?? 0 } as const)
+          : ({ kind: 'rect', lengthIn: item.lengthIn ?? 0, widthIn: item.widthIn ?? 0 } as const),
+      sizeLabel: item.sizeLabel,
+      crust: { name: item.crustName, class: item.crustClass },
+      toppingCount: item.toppingCount,
+      toppingPolicy: item.toppingPolicy,
+      premiumToppings: item.premiumToppings,
+      menuPriceUsd: item.menuPriceUsd,
+    })),
+    otherItems: deal.otherItems.map((item) => ({
+      quantity: item.quantity,
+      category: item.category,
+      descriptor: item.descriptor,
+      // Prefer the price stored on the item; fall back to the chain's component table.
+      menuPriceUsd:
+        item.menuPriceUsd ?? componentPrices.get(`${deal.chain}|${item.descriptor}`) ?? null,
+    })),
+    promoCode: deal.promoCode,
+    sourceUrl: deal.sourceUrl,
+    stale: deal.stale,
+    lastVerifiedAt: new Date(deal.lastVerifiedAt),
+  }));
+
+  const deliveryFees: Record<string, number> = {};
+  for (const fee of snapshot.deliveryFees) deliveryFees[fee.chain] = fee.feeUsd;
+
   return {
     deals,
-    deliveryFees,
-    source: 'database',
-    hasUnverifiedData: rows.some((r) => r.provenance !== 'scraped'),
-    capturedAt: latestVerified.toISOString().slice(0, 10),
-    pricingLocale: rows[0]?.pricingLocale ?? 'san-diego-ca',
-    chainStatus: chainRows.map((chain) => {
-      const chainDeals = rows.filter((r) => r.chainId === chain.id);
+    deliveryFees:
+      Object.keys(deliveryFees).length > 0 ? deliveryFees : seedDeliveryFees(seedDataset),
+    source,
+    hasUnverifiedData: active.some((d) => d.provenance !== 'scraped'),
+    capturedAt: snapshot.capturedAt.slice(0, 10),
+    pricingLocale: snapshot.pricingLocale,
+    chainStatus: snapshot.chains.map((chain) => {
+      const chainDeals = active.filter((d) => d.chain === chain.slug);
+      const status = snapshot.chainStatus.find((s) => s.chain === chain.slug);
       const lastVerifiedAt = chainDeals.reduce<Date>(
-        (latest, r) => (r.lastVerifiedAt > latest ? r.lastVerifiedAt : latest),
-        new Date(0),
+        (latest, d) => {
+          const at = new Date(d.lastVerifiedAt);
+          return at > latest ? at : latest;
+        },
+        new Date(snapshot.capturedAt),
       );
       return {
         chain: chain.slug,
         displayName: chain.displayName,
         lastVerifiedAt,
-        stale: chainDeals.some((r) => r.stale),
+        stale: status?.status === 'failed' || chainDeals.some((d) => d.stale),
       };
     }),
   };

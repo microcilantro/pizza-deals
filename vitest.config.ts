@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['lib/**/*.test.ts', 'db/**/*.test.ts', 'scrapers/**/*.test.ts'],
+    include: ['lib/**/*.test.ts', 'seed/**/*.test.ts', 'scrapers/**/*.test.ts'],
     // Browser-backed extraction tests launch Chromium; the pure tests stay fast.
     testTimeout: 30_000,
     hookTimeout: 120_000,

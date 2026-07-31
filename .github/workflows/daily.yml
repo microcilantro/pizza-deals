@@ -1,0 +1,141 @@
+name: Daily scrape and deploy
+
+# Runs at 08:00 America/New_York, every day.
+#
+# GitHub's cron is UTC only and has no notion of daylight saving, so a single fixed hour
+# would drift by an hour twice a year — 8am becomes 7am in November and stays wrong until
+# March. Instead this fires at both candidate hours (12:00 UTC = 8am EDT, 13:00 UTC =
+# 8am EST) and the first step exits unless it is actually 08:xx in New York. Exactly one
+# of the two runs survives on any given day.
+on:
+  schedule:
+    - cron: '0 12 * * *'
+    - cron: '0 13 * * *'
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      skip_scrape:
+        description: 'Deploy the current snapshot without scraping'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    outputs:
+      scraped: ${{ steps.gate.outputs.proceed }}
+    steps:
+      - name: Only proceed at 08:00 Eastern
+        id: gate
+        run: |
+          HOUR=$(TZ=America/New_York date +%H)
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "Not a scheduled run; proceeding."
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          elif [ "$HOUR" = "08" ]; then
+            echo "It is ${HOUR}:00 in New York; proceeding."
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "It is ${HOUR}:00 in New York, not 08. This is the DST twin; skipping."
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.proceed == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.proceed == 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+        if: steps.gate.outputs.proceed == 'true'
+
+      - name: Install Chromium
+        if: steps.gate.outputs.proceed == 'true' && inputs.skip_scrape != true
+        run: npx playwright install --with-deps chromium
+
+      # A total scrape failure is not a deploy failure: the merge keeps the previous
+      # snapshot's data and marks it stale, and the site should still go out saying so.
+      - name: Scrape
+        if: steps.gate.outputs.proceed == 'true' && inputs.skip_scrape != true
+        continue-on-error: true
+        env:
+          SCRAPER_ARTIFACT_DIR: scraper-artifacts
+        run: npm run scrape
+
+      # Failure screenshots and HTML are what make a broken selector diagnosable.
+      - name: Upload failure artifacts
+        if: steps.gate.outputs.proceed == 'true' && hashFiles('scraper-artifacts/**') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraper-artifacts-${{ github.run_id }}
+          path: scraper-artifacts/
+          retention-days: 14
+
+      - name: Commit snapshot
+        if: steps.gate.outputs.proceed == 'true' && inputs.skip_scrape != true
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/snapshots/
+          if git diff --staged --quiet; then
+            echo "No snapshot change today."
+          else
+            git commit -m "data: daily snapshot $(TZ=America/New_York date +%Y-%m-%d)"
+            git push
+          fi
+
+  build:
+    needs: scrape
+    if: needs.scrape.outputs.scraped == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Pick up the snapshot the scrape job just pushed.
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+
+      - name: Build static site
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}
+        run: npm run build
+
+      # Pages runs Jekyll by default, and Jekyll ignores directories starting with an
+      # underscore — which is all of Next's _next/ assets. Without this the site loads
+      # completely unstyled and non-interactive.
+      - name: Disable Jekyll
+        run: touch out/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
