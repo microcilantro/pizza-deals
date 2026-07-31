@@ -1,5 +1,5 @@
 import type { RawDealCard, ScrapedDeal, ScrapedSize } from '../types';
-import { parseDealCard, parseDiameterIn } from './parse';
+import { parseDealCard, parseDiameterIn, parseFulfillment } from './parse';
 import type { StoreMenuResponse } from './api';
 
 /**
@@ -13,12 +13,13 @@ import type { StoreMenuResponse } from './api';
  * Two rules here are specific to this project's constraints and are the reason this file
  * is not a one-liner:
  *
- *   - `Local: true` marks a store-specific offer. The brief scopes this app to national
- *     deals, so those are excluded — and recorded as excluded rather than dropped, so
- *     the exclusion is auditable.
+ *   - National scope is decided by whether the offer also appears in a second, distant
+ *     market — not by the payload's `Local` flag, which every coupon carries because the
+ *     menu is store-scoped by construction. Passing no code set disables the check.
  *   - `ValidServiceMethods` decides carryout vs delivery. A coupon valid for both is
  *     TWO deals, because requirement 5 makes them separate rows with separate prices.
- *     A coupon that states neither is refused rather than assigned to one.
+ *     When the field is absent the offer's own text is consulted ("Carryout Only"), and
+ *     only if that is silent too is the coupon refused rather than assigned a guess.
  */
 
 /** The menu groups sizes by product category; only pizza has a diameter. */
@@ -67,7 +68,16 @@ export interface CouponMapping {
   unparsed: { raw: string; reason: string }[];
 }
 
-export function dealsFromCoupons(menu: StoreMenuResponse, sourceUrl: string): CouponMapping {
+export interface CouponOptions {
+  /** Coupon codes also seen in the comparison market. Omit to skip the national check. */
+  nationalCodes?: ReadonlySet<string>;
+}
+
+export function dealsFromCoupons(
+  menu: StoreMenuResponse,
+  sourceUrl: string,
+  options: CouponOptions = {},
+): CouponMapping {
   const deals: ScrapedDeal[] = [];
   const unparsed: CouponMapping['unparsed'] = [];
 
@@ -81,13 +91,21 @@ export function dealsFromCoupons(menu: StoreMenuResponse, sourceUrl: string): Co
       continue;
     }
 
-    // National-only scope: a store-local coupon is not comparable across the country.
-    if (coupon?.Local === true) {
-      unparsed.push({ raw, reason: 'Store-local offer, excluded by the national-only scope.' });
+    // National-only scope, decided by presence in a second market rather than by a flag.
+    if (options.nationalCodes && !options.nationalCodes.has(code)) {
+      unparsed.push({
+        raw,
+        reason: 'Not offered in the comparison market, so it is not a national deal.',
+      });
       continue;
     }
 
-    const fulfillments = fulfillmentsFor(coupon?.ValidServiceMethods);
+    let fulfillments = fulfillmentsFor(coupon?.ValidServiceMethods);
+    if (fulfillments.length === 0) {
+      // Many coupons leave the field empty but say "Carryout Only" in their own copy.
+      const stated = parseFulfillment(name, description);
+      if (stated) fulfillments = [stated];
+    }
     if (fulfillments.length === 0) {
       unparsed.push({
         raw,

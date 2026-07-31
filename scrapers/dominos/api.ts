@@ -21,16 +21,37 @@ import { USER_AGENT } from '../session';
 
 export const ORDER_ORIGIN = 'https://order.dominos.com';
 
+export interface Market {
+  city: string;
+  region: string;
+  postalCode: string;
+}
+
 /** D5: the reference market every price is scoped to. */
-export const REFERENCE_MARKET = {
+export const REFERENCE_MARKET: Market = {
   city: 'San Diego',
   region: 'CA',
   postalCode: '92101',
 } as const;
 
+/**
+ * A second, deliberately distant market, used only to decide which offers are national.
+ *
+ * The menu payload's `Local` flag does not mean what its name suggests — every coupon in
+ * a store menu carries it, because the menu is store-scoped by construction. So it
+ * cannot separate a national promotion from a store's own. Comparing two markets can:
+ * an offer present in both San Diego and Columbus is running nationally; one present in
+ * only one is not. Prices still come from the reference market.
+ */
+export const COMPARISON_MARKET: Market = {
+  city: 'Columbus',
+  region: 'OH',
+  postalCode: '43215',
+};
+
 export function storeLocatorUrl(
   type: 'Carryout' | 'Delivery',
-  market = REFERENCE_MARKET,
+  market: Market = REFERENCE_MARKET,
 ): string {
   const params = new URLSearchParams({
     type,

@@ -4,6 +4,8 @@ import type { Browser } from 'playwright';
 import type { ScrapeResult, ScrapedDeal, ScrapedSize } from '../types';
 import {
   ApiRobotsDisallowedError,
+  COMPARISON_MARKET,
+  type Market,
   REFERENCE_MARKET,
   createApiClient,
   loadApiRobots,
@@ -67,9 +69,12 @@ export async function scrapeDominos(
     const getJson = createApiClient({ robots });
 
     // ------------------------------------------------------------------ store
-    const locatorUrl = storeLocatorUrl('Carryout');
-    const located = await getJson<StoreLocatorResponse>(locatorUrl);
-    const store = (located.Stores ?? []).find((s) => s.IsOnlineCapable && s.StoreID);
+    const findStore = async (market: Market) => {
+      const located = await getJson<StoreLocatorResponse>(storeLocatorUrl('Carryout', market));
+      return (located.Stores ?? []).find((s) => s.IsOnlineCapable && s.StoreID);
+    };
+
+    const store = await findStore(REFERENCE_MARKET);
 
     if (!store?.StoreID) {
       result.status = 'failed';
@@ -97,7 +102,30 @@ export async function scrapeDominos(
       result.screenshotPaths.push(...(await dumpPayload(options.artifactDir, 'menu', menu)));
     }
 
-    const { deals, unparsed } = dealsFromCoupons(menu, menuUrl);
+    /*
+     * National scope, decided by comparing markets rather than by trusting a flag.
+     * An offer running in both San Diego and Columbus is national; one running in only
+     * one is not. If the comparison market cannot be reached the check is skipped rather
+     * than silently discarding everything — a note records that it was skipped.
+     */
+    let nationalCodes: Set<string> | undefined;
+    try {
+      const comparisonStore = await findStore(COMPARISON_MARKET);
+      if (comparisonStore?.StoreID) {
+        const comparisonMenu = await getJson<StoreMenuResponse>(
+          storeMenuUrl(comparisonStore.StoreID),
+        );
+        nationalCodes = new Set(Object.keys(comparisonMenu.Coupons ?? {}));
+      }
+    } catch (error) {
+      result.errors.push(
+        `Comparison market (${COMPARISON_MARKET.city}) unreachable, so the national-only ` +
+          `check was skipped this run: ${describe(error)}`,
+      );
+      result.status = result.status === 'failed' ? 'failed' : 'partial';
+    }
+
+    const { deals, unparsed } = dealsFromCoupons(menu, menuUrl, { nationalCodes });
     result.unparsed.push(...unparsed);
 
     // An empty coupon list is failure, not "no deals today" — the chain always has some,

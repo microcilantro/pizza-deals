@@ -108,18 +108,50 @@ describe('dealsFromCoupons', () => {
     expect(deals.map((d) => d.fulfillment).sort()).toEqual(['carryout', 'delivery']);
   });
 
-  it('excludes store-local offers, and says it did', () => {
-    const { deals, unparsed } = dealsFromCoupons(
-      withCoupons({ '9193': coupon({ Local: true }) }),
-      SOURCE,
-    );
-    expect(deals).toHaveLength(0);
-    expect(unparsed[0]!.reason).toMatch(/store-local.*national-only scope/i);
+  it('ignores the Local flag, which every store-menu coupon carries', () => {
+    // Local:true does not mean "store-specific promotion" — the menu is store-scoped by
+    // construction, so the flag is set on plainly national offers too. Filtering on it
+    // discarded 17 of 21 real coupons.
+    const { deals } = dealsFromCoupons(withCoupons({ '9193': coupon({ Local: true }) }), SOURCE);
+    expect(deals).toHaveLength(1);
   });
 
-  it('refuses a coupon with no service method rather than picking one', () => {
+  it('excludes offers the comparison market does not also run', () => {
     const { deals, unparsed } = dealsFromCoupons(
-      withCoupons({ '9193': coupon({ ValidServiceMethods: [] }) }),
+      withCoupons({ '9193': coupon(), LOCALONLY: coupon({ Name: 'Large 3-Topping Pizza' }) }),
+      SOURCE,
+      { nationalCodes: new Set(['9193']) },
+    );
+    expect(deals.map((d) => d.promoCode)).toEqual(['9193']);
+    expect(unparsed[0]!.reason).toMatch(/not offered in the comparison market/i);
+  });
+
+  it('skips the national check when no comparison codes are supplied', () => {
+    const { deals } = dealsFromCoupons(withCoupons({ '9193': coupon() }), SOURCE);
+    expect(deals).toHaveLength(1);
+  });
+
+  it('falls back to the offer text when the service-method field is empty', () => {
+    // Real coupons routinely leave ValidServiceMethods empty and say so in their copy.
+    const { deals } = dealsFromCoupons(
+      withCoupons({
+        '5057': coupon({
+          Name: '1 Large 3 Topping Pizza – Carryout Only',
+          Description: '',
+          ValidServiceMethods: [],
+        }),
+      }),
+      SOURCE,
+    );
+    expect(deals).toHaveLength(1);
+    expect(deals[0]!.fulfillment).toBe('carryout');
+  });
+
+  it('refuses only when neither the field nor the text states a method', () => {
+    const { deals, unparsed } = dealsFromCoupons(
+      withCoupons({
+        '9193': coupon({ Description: 'Great value all week.', ValidServiceMethods: [] }),
+      }),
       SOURCE,
     );
     expect(deals).toHaveLength(0);
@@ -172,7 +204,6 @@ describe('dealsFromCoupons', () => {
           Price: '8.99',
           ValidServiceMethods: ['Carryout'],
         }),
-        LOCAL1: coupon({ Local: true }),
       }),
       SOURCE,
     );
@@ -183,6 +214,6 @@ describe('dealsFromCoupons', () => {
       kind: 'multi_pizza',
       priceUsd: 13.98,
     });
-    expect(unparsed).toHaveLength(2); // the bread bites, and the local offer
+    expect(unparsed).toHaveLength(1); // the bread bites, which contain no pizza
   });
 });
