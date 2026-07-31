@@ -62,19 +62,12 @@ function readFromSeed(): DealFeed {
       chain: chain.slug,
       displayName: chain.displayName,
       lastVerifiedAt: capturedAt,
-      stale: isStale(capturedAt),
+      // Age-based staleness is decided in the browser (see FreshnessBar): computing it
+      // here would freeze at build time on a static export. This flag means only "the
+      // scraper itself marked this stale".
+      stale: false,
     })),
   };
-}
-
-/**
- * A deal is stale when no scrape has confirmed it recently. The job runs at most daily,
- * so two days without a confirmation means something is broken rather than merely quiet.
- */
-const STALE_AFTER_MS = 2 * 24 * 60 * 60 * 1000;
-
-export function isStale(lastVerifiedAt: Date, now: Date = new Date()): boolean {
-  return now.getTime() - lastVerifiedAt.getTime() > STALE_AFTER_MS;
 }
 
 /**
@@ -193,7 +186,7 @@ async function readFromDatabase(): Promise<DealFeed> {
         chain: chain.slug,
         displayName: chain.displayName,
         lastVerifiedAt,
-        stale: chainDeals.some((r) => r.stale) || isStale(lastVerifiedAt),
+        stale: chainDeals.some((r) => r.stale),
       };
     }),
   };

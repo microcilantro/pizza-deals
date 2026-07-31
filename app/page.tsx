@@ -1,13 +1,13 @@
 import { DealBrowser } from '@/components/DealBrowser';
+import { FreshnessBar } from '@/components/FreshnessBar';
 import { PixelIcon } from '@/components/PixelIcon';
 import { getDealFeed } from '@/lib/data/deals';
 
-// Deals change at most daily, so revalidate hourly rather than per request.
-export const revalidate = 3600;
+// Data is baked at build time; the daily job rebuilds and redeploys.
+export const dynamic = 'force-static';
 
 export default async function Home() {
   const feed = await getDealFeed();
-  const staleChains = feed.chainStatus.filter((c) => c.stale);
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
@@ -48,23 +48,17 @@ export default async function Home() {
           </div>
         )}
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-4 border-crt bg-panel px-4 py-3 font-pixel text-[10px] text-dim">
-          <span>
-            UPDATED <span className="text-ink">{feed.capturedAt}</span>
-          </span>
-          <span>
-            MARKET <span className="text-ink">{feed.pricingLocale.toUpperCase()}</span>
-          </span>
-          <span>
-            SOURCE <span className="text-ink">{feed.source.toUpperCase()}</span>
-          </span>
-          {staleChains.length > 0 && (
-            <span className="flex items-center gap-2 text-flame">
-              <PixelIcon name="warning" size={16} />
-              STALE: {staleChains.map((c) => c.displayName.toUpperCase()).join(', ')}
-            </span>
-          )}
-        </div>
+        <FreshnessBar
+          capturedAt={feed.capturedAt}
+          pricingLocale={feed.pricingLocale}
+          source={feed.source}
+          chains={feed.chainStatus.map((c) => ({
+            chain: c.chain,
+            displayName: c.displayName,
+            lastVerifiedAt: c.lastVerifiedAt.toISOString(),
+            flaggedStale: c.stale,
+          }))}
+        />
       </header>
 
       <DealBrowser deals={feed.deals} deliveryFees={feed.deliveryFees} />
