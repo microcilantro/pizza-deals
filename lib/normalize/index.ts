@@ -23,3 +23,13 @@ export {
   type RankedSegment,
   type RankingResult,
 } from './rank';
+export {
+  REFERENCE_DIAMETER_IN,
+  rankForTarget,
+  solveForTarget,
+  targetAreaForPizzas,
+  type QuantityPlan,
+  type QuantityRankedDeal,
+  type QuantityRankedSegment,
+  type QuantityRankingResult,
+} from './quantity';

@@ -97,7 +97,9 @@ export type AssumptionCode =
   | 'BUNDLE_CREDIT_PARTIAL'
   | 'BUNDLE_NOT_IMPUTED'
   | 'TOPPING_COUNT_IS_MAXIMUM'
-  | 'STALE_DATA';
+  | 'STALE_DATA'
+  | 'REPEAT_PURCHASE'
+  | 'TARGET_OVERSHOT';
 
 export interface Assumption {
   code: AssumptionCode;
