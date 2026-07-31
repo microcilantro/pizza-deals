@@ -62,10 +62,6 @@ jobs:
       - run: npm ci
         if: steps.gate.outputs.proceed == 'true'
 
-      - name: Install Chromium
-        if: steps.gate.outputs.proceed == 'true' && inputs.skip_scrape != true
-        run: npx playwright install --with-deps chromium
-
       # A total scrape failure is not a deploy failure: the merge keeps the previous
       # snapshot's data and marks it stale, and the site should still go out saying so.
       - name: Scrape

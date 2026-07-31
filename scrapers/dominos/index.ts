@@ -1,8 +1,18 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import type { Browser } from 'playwright';
-import { createSession, RobotsDisallowedError, type ScrapeSession } from '../session';
 import type { ScrapeResult, ScrapedDeal, ScrapedSize } from '../types';
-import { extractDealCards, extractMenuSizes } from './extract';
-import { parseDealCard, parseDiameterIn, parseRectDimensions, parseSizeLabel } from './parse';
+import {
+  ApiRobotsDisallowedError,
+  REFERENCE_MARKET,
+  createApiClient,
+  loadApiRobots,
+  storeLocatorUrl,
+  storeMenuUrl,
+  type StoreLocatorResponse,
+  type StoreMenuResponse,
+} from './api';
+import { dealsFromCoupons, menuPricesFromVariants, sizesFromMenu } from './fromApi';
 
 export const DOMINOS = {
   slug: 'dominos',
@@ -13,22 +23,28 @@ export const DOMINOS = {
 
 export interface RunOptions {
   artifactDir: string;
-  /** Injected in tests; defaults to the real page fetch. */
-  session?: ScrapeSession;
 }
 
 /**
- * Scrapes Domino's national deals and the menu sizes they resolve against.
+ * Scrapes Domino's national deals from the ordering endpoints.
  *
- * Order matters: the menu is read *first*, because a deal without a resolvable diameter
- * is not usable. Sizes come from the chain's own menu page every run rather than from a
- * stored table, since chains change sizing and a cached diameter goes wrong silently.
+ * This replaced a DOM scraper that could never have worked: the rendered coupon page
+ * contains no prices at all until a store is selected, so there was nothing to parse.
+ * The endpoints take the store as a parameter, which turns the reference market (D5)
+ * from a label into an explicit input, and they state diameters directly —
+ * `Sizes.Pizza.14.Name = "Large (14\")"` — which is exactly what requirement 1 asks for
+ * and what no reference table could honestly provide.
  *
- * Failure policy, per the brief: capture a screenshot and the HTML, log loudly, return a
- * status the caller can act on, and never delete anything. Keeping the last known good
- * data and marking it stale is the caller's job — this function only reports.
+ * The browser argument is unused here and kept only so every chain scraper shares one
+ * signature; chains whose data is only in rendered HTML will still need it.
+ *
+ * Failure policy is unchanged: log loudly, keep the payload for diagnosis, return a
+ * status, delete nothing. Preserving the last known good data is the merge step's job.
  */
-export async function scrapeDominos(browser: Browser, options: RunOptions): Promise<ScrapeResult> {
+export async function scrapeDominos(
+  _browser: Browser | null,
+  options: RunOptions,
+): Promise<ScrapeResult> {
   const startedAt = new Date();
   const result: ScrapeResult = {
     chain: DOMINOS.slug,
@@ -44,120 +60,110 @@ export async function scrapeDominos(browser: Browser, options: RunOptions): Prom
     screenshotPaths: [],
   };
 
-  const { session, context } = options.session
-    ? { session: options.session, context: null }
-    : await createSession(browser, { chain: DOMINOS.slug, artifactDir: options.artifactDir });
-
   try {
-    await session.loadRobots(DOMINOS.origin);
+    // Permission first, every run. order.dominos.com is a different host from www, so
+    // it gets its own robots.txt rather than inheriting assumptions.
+    const robots = await loadApiRobots();
+    const getJson = createApiClient({ robots });
 
-    // ---------------------------------------------------------------- menu / sizes
-    try {
-      const menuPage = await session.open(DOMINOS.menuUrl);
-      try {
-        const rows = await extractMenuSizes(menuPage);
-        if (rows.length === 0) {
-          result.status = 'partial';
-          result.errors.push('No size rows found on the menu page; selectors may have changed.');
-          result.screenshotPaths.push(...(await session.captureFailure(menuPage, 'menu-empty')));
-        }
+    // ------------------------------------------------------------------ store
+    const locatorUrl = storeLocatorUrl('Carryout');
+    const located = await getJson<StoreLocatorResponse>(locatorUrl);
+    const store = (located.Stores ?? []).find((s) => s.IsOnlineCapable && s.StoreID);
 
-        for (const row of rows) {
-          const text = `${row.label} ${row.descriptionText}`;
-          const sizeLabel = parseSizeLabel(text) ?? row.label.trim();
-
-          const rect = parseRectDimensions(text);
-          if (rect) {
-            result.sizes.push({
-              sizeLabel,
-              shape: 'rect',
-              lengthIn: rect.lengthIn,
-              widthIn: rect.widthIn,
-              sourceUrl: DOMINOS.menuUrl,
-            });
-            continue;
-          }
-
-          const diameterIn = parseDiameterIn(text);
-          if (diameterIn === null) {
-            // A size whose diameter we cannot read is worse than useless — it would let
-            // a deal through with no area. Report it and move on.
-            result.unparsed.push({
-              raw: text,
-              reason: `Menu size "${sizeLabel}" states no diameter, so deals using it cannot be ranked.`,
-            });
-            result.status = result.status === 'failed' ? 'failed' : 'partial';
-            continue;
-          }
-
-          result.sizes.push({
-            sizeLabel,
-            shape: 'round',
-            diameterIn,
-            sourceUrl: DOMINOS.menuUrl,
-          });
-        }
-      } finally {
-        await menuPage.close();
-      }
-    } catch (error) {
-      result.status = 'partial';
-      result.errors.push(`Menu scrape failed: ${describe(error)}`);
+    if (!store?.StoreID) {
+      result.status = 'failed';
+      result.errors.push(
+        `No online-capable store found for ${REFERENCE_MARKET.city}, ${REFERENCE_MARKET.region}. ` +
+          'Every price is scoped to that market, so there is nothing to scrape without one.',
+      );
+      return finish(result);
     }
 
-    // --------------------------------------------------------------------- deals
-    const dealsPage = await session.open(DOMINOS.dealsUrl);
-    try {
-      const cards = await extractDealCards(dealsPage, DOMINOS.dealsUrl);
+    // ------------------------------------------------------------------- menu
+    const menuUrl = storeMenuUrl(store.StoreID);
+    const menu = await getJson<StoreMenuResponse>(menuUrl);
 
-      // An empty list is failure, not "no deals today". A chain always has coupons; a
-      // silent empty result is exactly the outcome this design exists to prevent.
-      if (cards.length === 0) {
-        result.status = 'failed';
-        result.errors.push('No deal cards found; selectors are stale or the page did not render.');
-        result.screenshotPaths.push(...(await session.captureFailure(dealsPage, 'deals-empty')));
-      }
+    result.sizes = sizesFromMenu(menu, menuUrl);
+    result.menuPrices = menuPricesFromVariants(menu, menuUrl);
 
-      for (const card of cards) {
-        const { deal, unparsed } = parseDealCard(card);
-        if (deal) result.deals.push(withResolvableSize(deal, result.sizes, result));
-        if (unparsed) result.unparsed.push(unparsed);
-      }
+    // No sizes means no areas, and without areas nothing can be ranked. That is a
+    // failure even if coupons came back fine.
+    if (result.sizes.length === 0) {
+      result.status = 'failed';
+      result.errors.push(
+        'Menu payload stated no pizza diameters; deals cannot be ranked without them.',
+      );
+      result.screenshotPaths.push(...(await dumpPayload(options.artifactDir, 'menu', menu)));
+    }
 
-      if (result.unparsed.length > 0 && result.status === 'ok') {
-        result.status = 'partial';
-      }
-    } finally {
-      await dealsPage.close();
+    const { deals, unparsed } = dealsFromCoupons(menu, menuUrl);
+    result.unparsed.push(...unparsed);
+
+    // An empty coupon list is failure, not "no deals today" — the chain always has some,
+    // and a silent empty result is the outcome this whole design exists to prevent.
+    if (deals.length === 0) {
+      result.status = 'failed';
+      result.errors.push(
+        `No usable coupons in the menu payload (${unparsed.length} were seen but not usable).`,
+      );
+      result.screenshotPaths.push(...(await dumpPayload(options.artifactDir, 'coupons', menu)));
+    } else {
+      result.deals = deals.map((deal) => withResolvableSize(deal, result.sizes, result));
+      if (result.unparsed.length > 0 && result.status === 'ok') result.status = 'partial';
     }
   } catch (error) {
     result.status = 'failed';
     result.errors.push(describe(error));
-    if (error instanceof RobotsDisallowedError) {
-      result.errors.push('Refusing to scrape a path robots.txt disallows.');
+    if (error instanceof ApiRobotsDisallowedError) {
+      result.errors.push('Refusing to fetch a path robots.txt disallows.');
     }
-  } finally {
-    if (context) await context.close();
-    result.screenshotPaths.push(...session.artifacts.filter((a) => a.endsWith('.png')));
-    result.finishedAt = new Date();
   }
 
+  return finish(result);
+}
+
+function finish(result: ScrapeResult): ScrapeResult {
+  result.finishedAt = new Date();
+
   if (result.status === 'failed') {
-    console.error(`[dominos] scrape FAILED:`, result.errors.join(' | '));
+    console.error(`[dominos] scrape FAILED: ${result.errors.join(' | ')}`);
   } else if (result.status === 'partial') {
     console.warn(
       `[dominos] scrape partial: ${result.deals.length} deals, ` +
-        `${result.unparsed.length} unparsed. ${result.errors.join(' | ')}`,
+        `${result.sizes.length} sizes, ${result.unparsed.length} unparsed.`,
     );
+  } else {
+    console.log(`[dominos] scrape ok: ${result.deals.length} deals, ${result.sizes.length} sizes.`);
   }
-
   return result;
 }
 
 /**
- * A deal naming a size we did not scrape cannot have its area computed. Rather than
- * drop it, the deal is kept with a note — the caller stores it, and normalization marks
- * it unrankable with a visible reason.
+ * The API equivalent of the DOM path's failure screenshot: keep the payload that
+ * confounded us, so the next person can see what actually came back rather than
+ * guessing from an error string.
+ */
+async function dumpPayload(
+  artifactDir: string,
+  label: string,
+  payload: unknown,
+): Promise<string[]> {
+  try {
+    await mkdir(artifactDir, { recursive: true });
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const file = path.join(artifactDir, `dominos-${label}-${stamp}.json`);
+    await writeFile(file, JSON.stringify(payload, null, 2).slice(0, 2_000_000), 'utf8');
+    return [file];
+  } catch (error) {
+    console.error('[dominos] could not write payload artifact:', error);
+    return [];
+  }
+}
+
+/**
+ * A deal naming a size the menu did not state cannot have its area computed. The deal is
+ * kept with a note rather than dropped; normalization marks it unrankable and says why.
  */
 function withResolvableSize(
   deal: ScrapedDeal,
@@ -176,7 +182,7 @@ function withResolvableSize(
       notes: [
         ...deal.notes,
         `No scraped diameter for size "${missing.join(', ')}" — this deal cannot be ranked ` +
-          'until the menu scrape resolves that size.',
+          'until the menu resolves that size.',
       ],
     };
   }

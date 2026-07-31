@@ -19,10 +19,15 @@ import { mergeScrape } from '@/lib/snapshot/merge';
 import { scrapeDominos } from './dominos';
 import type { ScrapeResult } from './types';
 
-type Scraper = (browser: Browser, options: { artifactDir: string }) => Promise<ScrapeResult>;
+type Scraper = (browser: Browser | null, options: { artifactDir: string }) => Promise<ScrapeResult>;
 
-const SCRAPERS: Record<string, Scraper> = {
-  dominos: scrapeDominos,
+/**
+ * `needsBrowser` exists because Domino's is read from JSON endpoints rather than
+ * rendered HTML, so launching Chromium for it would be pure cost. Chains whose data
+ * only exists in a rendered page will set it true.
+ */
+const SCRAPERS: Record<string, { run: Scraper; needsBrowser: boolean }> = {
+  dominos: { run: scrapeDominos, needsBrowser: false },
 };
 
 async function main() {
@@ -38,7 +43,8 @@ async function main() {
   }
 
   const artifactDir = process.env.SCRAPER_ARTIFACT_DIR ?? 'scraper-artifacts';
-  const browser = await chromium.launch();
+  const needsBrowser = chains.some((c) => SCRAPERS[c]?.needsBrowser);
+  const browser = needsBrowser ? await chromium.launch() : null;
   const results: ScrapeResult[] = [];
 
   try {
@@ -46,7 +52,7 @@ async function main() {
       // Each chain is isolated: a crash in one must not stop the others, which is the
       // whole reason the scrapers are separate modules.
       try {
-        results.push(await SCRAPERS[chain]!(browser, { artifactDir }));
+        results.push(await SCRAPERS[chain]!.run(browser, { artifactDir }));
       } catch (error) {
         console.error(`[${chain}] crashed outside its own error handling:`, error);
         results.push({
@@ -65,7 +71,7 @@ async function main() {
       }
     }
   } finally {
-    await browser.close();
+    await browser?.close();
   }
 
   const previous = (await loadLatestSnapshot()) ?? seedSnapshot();
