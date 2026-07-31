@@ -147,15 +147,24 @@ describe('dealsFromCoupons', () => {
     expect(deals[0]!.fulfillment).toBe('carryout');
   });
 
-  it('refuses only when neither the field nor the text states a method', () => {
-    const { deals, unparsed } = dealsFromCoupons(
+  it('treats an unrestricted offer as orderable both ways, and says so', () => {
+    // Silence is not ambiguity here: a coupon that names no service method carries no
+    // restriction, so it is available either way. Refusing these cost 11 real deals.
+    const { deals } = dealsFromCoupons(
       withCoupons({
         '9193': coupon({ Description: 'Great value all week.', ValidServiceMethods: [] }),
       }),
       SOURCE,
     );
-    expect(deals).toHaveLength(0);
-    expect(unparsed[0]!.reason).toMatch(/no valid service method/i);
+    expect(deals.map((d) => d.fulfillment).sort()).toEqual(['carryout', 'delivery']);
+    for (const deal of deals) {
+      expect(deal.notes.join(' ')).toMatch(/states no carryout\/delivery restriction/i);
+    }
+  });
+
+  it('does not add the inference note when the method was actually stated', () => {
+    const { deals } = dealsFromCoupons(withCoupons({ '9193': coupon() }), SOURCE);
+    expect(deals[0]!.notes.join(' ')).not.toMatch(/no carryout\/delivery restriction/i);
   });
 
   it('does not report the same rejection once per service method', () => {

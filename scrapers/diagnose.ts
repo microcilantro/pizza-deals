@@ -14,16 +14,17 @@
  * It answers, in order of importance:
  *   1. What page did we actually land on? (A bot wall or a store-picker looks nothing
  *      like a coupon list, and no selector will ever fix that.)
- *   2. Which of our current selectors matched, and how many elements?
- *   3. Where does the money live, and what identifies those elements?
- *   4. What repeated structures exist that look like card lists?
+ *   2. Where does the money live, and what identifies those elements?
+ *   3. What repeated structures exist that look like card lists?
+ *
+ * Domino's no longer uses this — it is read from JSON endpoints. The tool remains for
+ * chains whose data genuinely only exists in rendered HTML.
  *
  * Read-only. It never writes a snapshot.
  */
 import { chromium, type Page } from 'playwright';
 import { createSession } from './session';
 import { DOMINOS } from './dominos';
-import { SELECTORS } from './dominos/extract';
 
 const TARGETS: Record<string, { origin: string; pages: { label: string; url: string }[] }> = {
   dominos: {
@@ -131,15 +132,6 @@ async function describePage(page: Page, label: string): Promise<void> {
   if (hits.length > 0) {
     console.log(`\n!! WALL/GATE MARKERS PRESENT: ${hits.join(', ')}`);
     console.log('!! No selector change fixes this — the page itself is not the deal list.');
-  }
-
-  // 2. Do our current selectors match anything?
-  console.log('\n-- current selector match counts --');
-  for (const [name, list] of Object.entries(SELECTORS)) {
-    for (const selector of list as readonly string[]) {
-      const count = await page.locator(selector).count().catch(() => -1);
-      if (count !== 0) console.log(`  ${name.padEnd(18)} ${String(count).padStart(4)}  ${selector}`);
-    }
   }
 
   // 3/4. What does the DOM actually look like?

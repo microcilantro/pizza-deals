@@ -16,10 +16,13 @@ import type { StoreMenuResponse } from './api';
  *   - National scope is decided by whether the offer also appears in a second, distant
  *     market — not by the payload's `Local` flag, which every coupon carries because the
  *     menu is store-scoped by construction. Passing no code set disables the check.
- *   - `ValidServiceMethods` decides carryout vs delivery. A coupon valid for both is
+ *   - `ValidServiceMethods` decides carryout vs delivery, and a coupon valid for both is
  *     TWO deals, because requirement 5 makes them separate rows with separate prices.
- *     When the field is absent the offer's own text is consulted ("Carryout Only"), and
- *     only if that is silent too is the coupon refused rather than assigned a guess.
+ *     When the field is empty the offer's own copy is consulted ("Carryout Only"). When
+ *     that is silent too, the offer carries no restriction and is therefore orderable
+ *     either way — so it becomes both rows, each carrying a note saying the method was
+ *     inferred from the absence of a restriction rather than read. That is an assumption
+ *     about Domino's rules, and it is recorded on the deal rather than hidden in code.
  */
 
 /** The menu groups sizes by product category; only pizza has a diameter. */
@@ -101,19 +104,17 @@ export function dealsFromCoupons(
     }
 
     let fulfillments = fulfillmentsFor(coupon?.ValidServiceMethods);
+    let methodInferred = false;
+
     if (fulfillments.length === 0) {
       // Many coupons leave the field empty but say "Carryout Only" in their own copy.
       const stated = parseFulfillment(name, description);
       if (stated) fulfillments = [stated];
     }
     if (fulfillments.length === 0) {
-      unparsed.push({
-        raw,
-        reason:
-          'Coupon states no valid service method, and carryout and delivery are separate ' +
-          'rows that must not be guessed at.',
-      });
-      continue;
+      // Neither the field nor the copy restricts it, so it is orderable either way.
+      fulfillments = ['carryout', 'delivery'];
+      methodInferred = true;
     }
 
     // One row per service method — the same offer can be a different value depending on
@@ -131,7 +132,17 @@ export function dealsFromCoupons(
 
       const { deal, unparsed: rejected } = parseDealCard(card);
       if (deal) {
-        deals.push({ ...deal, promoCode: code });
+        deals.push({
+          ...deal,
+          promoCode: code,
+          notes: methodInferred
+            ? [
+                ...deal.notes,
+                'The offer states no carryout/delivery restriction, so it is treated as ' +
+                  'available both ways. The price shown excludes any delivery fee.',
+              ]
+            : deal.notes,
+        });
       } else if (rejected && fulfillment === fulfillments[0]) {
         // Report the rejection once, not once per service method.
         unparsed.push(rejected);

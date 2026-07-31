@@ -110,11 +110,6 @@ jobs:
 
       - run: npm ci
 
-      # The extraction tests drive a real browser. Without this they cannot launch one
-      # and the whole suite fails, which is what broke the first run on main.
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-
       - run: npm test
 
       - name: Build static site
