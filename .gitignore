@@ -4,3 +4,7 @@ node_modules/
 .env.local
 .vercel
 scraper-artifacts/
+
+# build artifacts
+*.tsbuildinfo
+next-env.d.ts
