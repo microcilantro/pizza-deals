@@ -24,12 +24,22 @@ export {
   type RankingResult,
 } from './rank';
 export {
+  DEFAULT_SERVING_MODEL,
   REFERENCE_DIAMETER_IN,
+  SERVING_PRESETS,
+  areaPerPersonSqIn,
+  areaPerSliceSqIn,
+  peopleFed,
+  rankForPeople,
   rankForTarget,
   solveForTarget,
+  targetAreaForPeople,
   targetAreaForPizzas,
   type QuantityPlan,
   type QuantityRankedDeal,
   type QuantityRankedSegment,
   type QuantityRankingResult,
+  type PeopleRankingResult,
+  type PeopleTarget,
+  type ServingModel,
 } from './quantity';

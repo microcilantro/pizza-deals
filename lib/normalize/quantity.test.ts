@@ -3,9 +3,16 @@ import { deal, pizza, round, side } from './__fixtures__';
 import { computeDealMetrics } from './metrics';
 import { rankDeals } from './rank';
 import {
+  DEFAULT_SERVING_MODEL,
   REFERENCE_DIAMETER_IN,
+  SERVING_PRESETS,
+  areaPerPersonSqIn,
+  areaPerSliceSqIn,
+  peopleFed,
+  rankForPeople,
   rankForTarget,
   solveForTarget,
+  targetAreaForPeople,
   targetAreaForPizzas,
 } from './quantity';
 
@@ -191,5 +198,112 @@ describe('rankForTarget', () => {
   it('reports the target it solved for', () => {
     const result = rankForTarget([deal()], 300);
     expect(result.targetAreaSqIn).toBe(300);
+  });
+});
+
+describe('serving model (the slider label)', () => {
+  it('derives area per person from slices rather than a bare constant', () => {
+    // A 14" pizza cut into 8 gives ~19.24 in² per slice; three slices is ~57.7 in².
+    expect(areaPerSliceSqIn()).toBeCloseTo(19.242, 2);
+    expect(areaPerPersonSqIn()).toBeCloseTo(57.727, 2);
+  });
+
+  it('scales the target with headcount', () => {
+    const four = targetAreaForPeople(4);
+    expect(four.targetAreaSqIn).toBeCloseTo(230.907, 2);
+    expect(four.targetAreaSqIn).toBeCloseTo(areaPerPersonSqIn() * 4, 6);
+  });
+
+  it('responds to appetite presets', () => {
+    const light = targetAreaForPeople(4, SERVING_PRESETS.light);
+    const normal = targetAreaForPeople(4, SERVING_PRESETS.normal);
+    const hearty = targetAreaForPeople(4, SERVING_PRESETS.hearty);
+
+    expect(light.targetAreaSqIn).toBeLessThan(normal.targetAreaSqIn);
+    expect(hearty.targetAreaSqIn).toBeGreaterThan(normal.targetAreaSqIn);
+    expect(hearty.targetAreaSqIn / light.targetAreaSqIn).toBeCloseTo(2, 6);
+  });
+
+  it('states the assumption in terms a user can check and change', () => {
+    const { assumption } = targetAreaForPeople(4);
+    expect(assumption.code).toBe('SERVING_SIZE_ASSUMED');
+    expect(assumption.message).toContain('3 slices per person');
+    expect(assumption.message).toContain('14" pizza cut into 8');
+    expect(assumption.message).toContain('rule of thumb');
+  });
+
+  it('rejects nonsense inputs rather than producing a silent target', () => {
+    expect(() => targetAreaForPeople(0)).toThrow(RangeError);
+    expect(() => targetAreaForPeople(-2)).toThrow(RangeError);
+    expect(() => targetAreaForPeople(4, { ...DEFAULT_SERVING_MODEL, slicesPerPerson: 0 })).toThrow(
+      RangeError,
+    );
+  });
+
+  it('reports how many people an offer feeds', () => {
+    expect(peopleFed(targetAreaForPizzas(1))).toBeCloseTo(2.667, 2);
+    expect(peopleFed(targetAreaForPizzas(3))).toBeCloseTo(8, 5);
+  });
+});
+
+describe('rankForPeople', () => {
+  const largeCarryout = deal({
+    chain: 'dominos',
+    priceUsd: 9.99,
+    pizzaItems: [pizza({ shape: round(14) })],
+  });
+  const twoMediums = deal({
+    chain: 'pizza_hut',
+    kind: 'multi_pizza',
+    priceUsd: 13.98,
+    pizzaItems: [pizza({ shape: round(12), quantity: 2 })],
+  });
+
+  it('solves the same target the people conversion produces', () => {
+    const result = rankForPeople([largeCarryout], 6);
+    expect(result.people).toBe(6);
+    expect(result.targetAreaSqIn).toBeCloseTo(targetAreaForPeople(6).targetAreaSqIn, 6);
+  });
+
+  it('works out how many of each offer feeds the group', () => {
+    const result = rankForPeople([largeCarryout, twoMediums], 6);
+    const ranked = result.segments.flatMap((s) => s.deals);
+
+    // 6 people is ~346 in². One 14" is 154, so three of them; two 12" is 226, so two sets.
+    expect(ranked.find((r) => r.deal.chain === 'dominos')!.plan.units).toBe(3);
+    expect(ranked.find((r) => r.deal.chain === 'pizza_hut')!.plan.units).toBe(2);
+  });
+
+  it('attaches the serving assumption to every plan, not just the page', () => {
+    const result = rankForPeople([largeCarryout, twoMediums], 6);
+    for (const segment of result.segments) {
+      for (const entry of segment.deals) {
+        expect(entry.plan.assumptions[0]!.code).toBe('SERVING_SIZE_ASSUMED');
+      }
+    }
+  });
+
+  it('changes the answer when appetite changes', () => {
+    const light = rankForPeople([largeCarryout], 6, { servingModel: SERVING_PRESETS.light });
+    const hearty = rankForPeople([largeCarryout], 6, { servingModel: SERVING_PRESETS.hearty });
+
+    // 6 people at 2 slices is 12 slices — one and a half 14" pizzas, so buy 2.
+    expect(light.segments[0]!.deals[0]!.plan.units).toBe(2);
+    // At 4 slices it is 24 slices, exactly three pizzas.
+    expect(hearty.segments[0]!.deals[0]!.plan.units).toBe(3);
+    expect(hearty.segments[0]!.deals[0]!.plan.overshootSqIn).toBeCloseTo(0, 5);
+    expect(light.segments[0]!.deals[0]!.plan.totalCostUsd).toBeLessThan(
+      hearty.segments[0]!.deals[0]!.plan.totalCostUsd,
+    );
+  });
+
+  it('keeps segmentation intact — feeding a crowd is no reason to compare crust classes', () => {
+    const specialty = deal({
+      chain: 'papa_johns',
+      priceUsd: 15.0,
+      pizzaItems: [pizza({ crust: { name: 'Stuffed Crust', class: 'specialty' } })],
+    });
+    const result = rankForPeople([largeCarryout, specialty], 6);
+    expect(result.segments).toHaveLength(2);
   });
 });

@@ -479,6 +479,26 @@ and `deals` carries `provenance` (`scraped` | `manual_primary` | `manual_seconda
 a free-text `provenance_note`. Seed rows are `manual_secondary`; the scrapers write
 `scraped`. The UI must visibly mark anything that is not `scraped`.
 
+**D8 — The quantity slider is labeled in people.** The slider sets a target amount of
+pizza and deals are ranked by total spend to reach it, not by cost per in².
+
+This is a genuinely different ranking, not the main one scaled. Cost per square inch is
+scale-invariant — multiplying every deal by ten reorders nothing — so a slider over the
+existing metric would be decoration. What makes it real is that offers are bought whole:
+against the seed data, Pizza Hut's `$7 Deal Lover's` is a better ratio than Domino's
+`$9.99 Large`, but for two people it drops from 2nd to 3rd, because two mediums is 96%
+more pizza than two people need and you pay $14 instead of $9.99.
+
+Headcount converts to area through a `ServingModel` — slices per person × the area of one
+slice of a stated reference pizza — rather than a buried constant. This is the only
+number in the codebase that is not observed and cannot be; no amount of scraping reveals
+how hungry someone's friends are. Defaults to the common three-slices-per-adult rule of
+thumb, exposed as light/normal/hearty presets, and every plan carries a
+`SERVING_SIZE_ASSUMED` assumption naming the figure used. Two further assumptions ride
+along: `TARGET_OVERSHOT` (you pay for pizza past what you asked for) and
+`REPEAT_PURCHASE` — per-order coupon limits are not published on the deal pages, so
+"buy this offer 3 times" may not be permitted at all.
+
 ## 5. Still open
 
 **Q7 — "Any crust" offers** (edge case 10). Emit one deal row per eligible crust class,

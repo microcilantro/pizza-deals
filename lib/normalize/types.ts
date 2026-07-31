@@ -99,7 +99,8 @@ export type AssumptionCode =
   | 'TOPPING_COUNT_IS_MAXIMUM'
   | 'STALE_DATA'
   | 'REPEAT_PURCHASE'
-  | 'TARGET_OVERSHOT';
+  | 'TARGET_OVERSHOT'
+  | 'SERVING_SIZE_ASSUMED';
 
 export interface Assumption {
   code: AssumptionCode;
