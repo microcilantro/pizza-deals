@@ -1,0 +1,11 @@
+node_modules/
+.next/
+.env
+.env.local
+.vercel
+scraper-artifacts/
+
+# build artifacts
+*.tsbuildinfo
+next-env.d.ts
+out/

@@ -1,0 +1,687 @@
+{
+  "version": 1,
+  "capturedAt": "2026-07-31T00:00:00.000Z",
+  "pricingLocale": "san-diego-ca",
+  "chains": [
+    {
+      "slug": "dominos",
+      "displayName": "Domino's",
+      "menuUrl": "https://www.dominos.com/en/pages/order/menu",
+      "dealsUrl": "https://www.dominos.com/en/pages/order/#!/section/Coupons/"
+    },
+    {
+      "slug": "pizza_hut",
+      "displayName": "Pizza Hut",
+      "menuUrl": "https://www.pizzahut.com/menu",
+      "dealsUrl": "https://www.pizzahut.com/deals"
+    },
+    {
+      "slug": "papa_johns",
+      "displayName": "Papa John's",
+      "menuUrl": "https://www.papajohns.com/order/menu",
+      "dealsUrl": "https://www.papajohns.com/order/deals"
+    }
+  ],
+  "chainStatus": [
+    {
+      "chain": "dominos",
+      "displayName": "Domino's",
+      "status": "ok",
+      "lastSuccessfulAt": null,
+      "errors": [],
+      "unparsed": []
+    },
+    {
+      "chain": "pizza_hut",
+      "displayName": "Pizza Hut",
+      "status": "ok",
+      "lastSuccessfulAt": null,
+      "errors": [],
+      "unparsed": []
+    },
+    {
+      "chain": "papa_johns",
+      "displayName": "Papa John's",
+      "status": "ok",
+      "lastSuccessfulAt": null,
+      "errors": [],
+      "unparsed": []
+    }
+  ],
+  "sizes": [
+    {
+      "chain": "dominos",
+      "sizeLabel": "Small",
+      "shape": "round",
+      "diameterIn": 10,
+      "sourceUrl": "https://www.dominos.com/en/pages/order/#!/section/Coupons/",
+      "provenance": "manual_secondary"
+    },
+    {
+      "chain": "dominos",
+      "sizeLabel": "Medium",
+      "shape": "round",
+      "diameterIn": 12,
+      "sourceUrl": "https://www.dominos.com/en/pages/order/#!/section/Coupons/",
+      "provenance": "manual_secondary"
+    },
+    {
+      "chain": "dominos",
+      "sizeLabel": "Large",
+      "shape": "round",
+      "diameterIn": 14,
+      "sourceUrl": "https://www.dominos.com/en/pages/order/#!/section/Coupons/",
+      "provenance": "manual_secondary"
+    },
+    {
+      "chain": "pizza_hut",
+      "sizeLabel": "Medium",
+      "shape": "round",
+      "diameterIn": 12,
+      "sourceUrl": "https://menupedia.us/pizza-hut-menu/",
+      "provenance": "manual_secondary"
+    },
+    {
+      "chain": "pizza_hut",
+      "sizeLabel": "Large",
+      "shape": "round",
+      "diameterIn": 14,
+      "sourceUrl": "https://menupedia.us/pizza-hut-menu/",
+      "provenance": "manual_secondary"
+    },
+    {
+      "chain": "papa_johns",
+      "sizeLabel": "Medium",
+      "shape": "round",
+      "diameterIn": 12,
+      "sourceUrl": "https://www.slicepizzeria.com/papa-johns-pizza-sizes/",
+      "provenance": "manual_secondary"
+    },
+    {
+      "chain": "papa_johns",
+      "sizeLabel": "Large",
+      "shape": "round",
+      "diameterIn": 13.5,
+      "sourceUrl": "https://foodblogalliance.com/how-many-inches-is-a-large-papa-johns-pizza/",
+      "provenance": "manual_secondary",
+      "note": "DISPUTED. Two secondary sources returned in the same search disagree: https://www.slicepizzeria.com/papa-johns-pizza-sizes/ states 14\", https://foodblogalliance.com/how-many-inches-is-a-large-papa-johns-pizza/ states ~13.5\" for Original Crust. 13.5\" is used here as the more specific claim, but the gap is ~7.8% of the pizza and swings cost per in² by more than the difference between several ranked deals. This single row is the strongest argument for scraping diameter from the chain rather than trusting any reference table."
+    }
+  ],
+  "crusts": [
+    {
+      "chain": "dominos",
+      "crustName": "Hand Tossed",
+      "crustClass": "standard",
+      "availableDiametersIn": [],
+      "sourceUrl": "https://www.dominos.com/en/pages/order/#!/section/Coupons/",
+      "provenance": "manual_secondary"
+    },
+    {
+      "chain": "dominos",
+      "crustName": "Crunchy Thin",
+      "crustClass": "thin",
+      "availableDiametersIn": [],
+      "sourceUrl": "https://www.dominos.com/en/pages/order/#!/section/Coupons/",
+      "provenance": "manual_secondary"
+    },
+    {
+      "chain": "dominos",
+      "crustName": "Brooklyn Style",
+      "crustClass": "specialty",
+      "availableDiametersIn": [],
+      "sourceUrl": "https://www.dominos.com/en/pages/order/#!/section/Coupons/",
+      "provenance": "manual_secondary",
+      "note": "Specialty class but not necessarily upcharged — the two are independent, which is why crust_class and observed_upcharge_usd are separate columns."
+    },
+    {
+      "chain": "dominos",
+      "crustName": "Handmade Pan",
+      "crustClass": "specialty",
+      "availableDiametersIn": [],
+      "sourceUrl": "https://www.dominos.com/en/pages/order/#!/section/Coupons/",
+      "provenance": "manual_secondary",
+      "note": "Size availability for this crust is unverified and deliberately not asserted; the scraper must read it from the ordering page."
+    },
+    {
+      "chain": "pizza_hut",
+      "crustName": "Hand Tossed",
+      "crustClass": "standard",
+      "availableDiametersIn": [],
+      "sourceUrl": "https://menupedia.us/pizza-hut-menu/",
+      "provenance": "manual_secondary"
+    },
+    {
+      "chain": "pizza_hut",
+      "crustName": "Thin N Crispy",
+      "crustClass": "thin",
+      "availableDiametersIn": [],
+      "sourceUrl": "https://menupedia.us/pizza-hut-menu/",
+      "provenance": "manual_secondary"
+    },
+    {
+      "chain": "pizza_hut",
+      "crustName": "Tavern",
+      "crustClass": "thin",
+      "availableDiametersIn": [],
+      "sourceUrl": "https://www.dealnews.com/s1337/Pizza-Hut/",
+      "provenance": "manual_secondary",
+      "note": "Classed as thin on the basis of how it is described rather than a chain statement. Worth confirming when the scraper lands."
+    },
+    {
+      "chain": "pizza_hut",
+      "crustName": "Original Pan",
+      "crustClass": "specialty",
+      "availableDiametersIn": [],
+      "sourceUrl": "https://menupedia.us/pizza-hut-menu/",
+      "provenance": "manual_secondary"
+    },
+    {
+      "chain": "pizza_hut",
+      "crustName": "Stuffed Crust",
+      "crustClass": "specialty",
+      "availableDiametersIn": [],
+      "sourceUrl": "https://menupedia.us/pizza-hut-menu/",
+      "provenance": "manual_secondary"
+    },
+    {
+      "chain": "papa_johns",
+      "crustName": "Original",
+      "crustClass": "standard",
+      "availableDiametersIn": [],
+      "sourceUrl": "https://papajohns-menus.us/",
+      "provenance": "manual_secondary"
+    },
+    {
+      "chain": "papa_johns",
+      "crustName": "Thin",
+      "crustClass": "thin",
+      "availableDiametersIn": [],
+      "sourceUrl": "https://papajohns-menus.us/",
+      "provenance": "manual_secondary"
+    },
+    {
+      "chain": "papa_johns",
+      "crustName": "Epic Stuffed Crust",
+      "crustClass": "specialty",
+      "availableDiametersIn": [],
+      "sourceUrl": "https://papajohns-menus.us/",
+      "provenance": "manual_secondary"
+    }
+  ],
+  "componentValues": [
+    {
+      "chain": "pizza_hut",
+      "category": "wings",
+      "descriptor": "Wings, 8 pc",
+      "menuPriceUsd": 10.99,
+      "sourceUrl": "https://menupedia.us/pizza-hut-menu/",
+      "provenance": "manual_secondary",
+      "note": "Source quotes $10.99 per order for Buffalo / Honey BBQ / Garlic Parmesan; it does not state whether that is the bone-in or boneless price. Applied to the boneless wings in the Big Dinner Box, which may overstate the credit."
+    }
+  ],
+  "deliveryFees": [],
+  "deals": [
+    {
+      "fingerprint": "ba49cc929a4696e63ab9c8977648597d",
+      "chain": "dominos",
+      "dealName": "Large 3-Topping Carryout",
+      "kind": "single_pizza",
+      "fulfillment": "carryout",
+      "priceUsd": 7.99,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": null,
+      "validThrough": null,
+      "sourceUrl": "https://thekrazycouponlady.com/tips/store-hacks/dominos-pizza-deals",
+      "pizzaItems": [
+        {
+          "quantity": 1,
+          "sizeLabel": "Large",
+          "shape": "round",
+          "diameterIn": 14,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 3,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "manual_secondary",
+      "notes": [
+        "Advertised as Monday–Thursday only. Day-of-week restrictions are not modeled; the schema has valid_from/valid_through but no recurring-day concept."
+      ],
+      "firstSeen": "2026-07-31T00:00:00.000Z",
+      "lastSeen": "2026-07-31T00:00:00.000Z",
+      "lastVerifiedAt": "2026-07-31T00:00:00.000Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T00:00:00.000Z",
+          "priceUsd": 7.99,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "14ecbe09bc20cf25e3e482aea90640ed",
+      "chain": "dominos",
+      "dealName": "Mix & Match — 2 or more items at $6.99 each",
+      "kind": "multi_pizza",
+      "fulfillment": "delivery",
+      "priceUsd": 13.98,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": null,
+      "validThrough": null,
+      "sourceUrl": "https://www.coupons.com/coupon-codes/dominos",
+      "pizzaItems": [
+        {
+          "quantity": 2,
+          "sizeLabel": "Medium",
+          "shape": "round",
+          "diameterIn": 12,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 2,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "manual_secondary",
+      "notes": [
+        "Advertised per item ($6.99 each, minimum 2). Modeled as the 2-pizza combination at $13.98; the UI must show the chain's per-item phrasing alongside our figure."
+      ],
+      "firstSeen": "2026-07-31T00:00:00.000Z",
+      "lastSeen": "2026-07-31T00:00:00.000Z",
+      "lastVerifiedAt": "2026-07-31T00:00:00.000Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T00:00:00.000Z",
+          "priceUsd": 13.98,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "c789783f255b85e18f1eca1413a6fc4c",
+      "chain": "dominos",
+      "dealName": "$9.99 Large, Any Crust, Any Toppings (up to 7)",
+      "kind": "single_pizza",
+      "fulfillment": "carryout",
+      "priceUsd": 9.99,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": null,
+      "validThrough": "2026-08-03",
+      "sourceUrl": "https://slickdeals.net/f/18429868-domino-s-pizza-9-99-large-any-crust-any-toppings-pizza-up-to-7-toppings-july-7-aug-3",
+      "pizzaItems": [
+        {
+          "quantity": 1,
+          "sizeLabel": "Large",
+          "shape": "round",
+          "diameterIn": 14,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 7,
+          "toppingPolicy": "up_to",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "manual_secondary",
+      "notes": [
+        "Offer states \"any crust\", so thin and specialty variants exist at the same price — meaning the specialty premium is zero for this offer. Only the standard hand-tossed variant is modeled, because which crusts qualify was not verifiable from a secondary source. This is a genuine modeling gap: see the report."
+      ],
+      "firstSeen": "2026-07-31T00:00:00.000Z",
+      "lastSeen": "2026-07-31T00:00:00.000Z",
+      "lastVerifiedAt": "2026-07-31T00:00:00.000Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T00:00:00.000Z",
+          "priceUsd": 9.99,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "a3839b42f382a48f2f7111ed0cf36a6d",
+      "chain": "dominos",
+      "dealName": "50% off menu-priced pizzas",
+      "kind": "single_pizza",
+      "fulfillment": "delivery",
+      "priceUsd": null,
+      "discountPercent": 50,
+      "discountScope": "pizza",
+      "promoCode": null,
+      "validThrough": "2026-08-02",
+      "sourceUrl": "https://www.coupons.com/coupon-codes/dominos",
+      "pizzaItems": [
+        {
+          "quantity": 1,
+          "sizeLabel": "Large",
+          "shape": "round",
+          "diameterIn": 14,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 1,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "manual_secondary",
+      "notes": [
+        "Deliberately seeded without a menu price: no Domino's à-la-carte price could be sourced. Exercises the D6 refusal path — the deal is stored and shown, but marked unrankable rather than given a guessed price."
+      ],
+      "firstSeen": "2026-07-31T00:00:00.000Z",
+      "lastSeen": "2026-07-31T00:00:00.000Z",
+      "lastVerifiedAt": "2026-07-31T00:00:00.000Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T00:00:00.000Z",
+          "priceUsd": null,
+          "discountPercent": 50
+        }
+      ]
+    },
+    {
+      "fingerprint": "88340afbf4d90e9bc20231a986fce493",
+      "chain": "pizza_hut",
+      "dealName": "Big Dinner Box",
+      "kind": "bundle",
+      "fulfillment": "carryout",
+      "priceUsd": 21.99,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": null,
+      "validThrough": null,
+      "sourceUrl": "https://pizzahutmenu.us/pizza-huts-big-dinner-box-menu/",
+      "pizzaItems": [
+        {
+          "quantity": 2,
+          "sizeLabel": "Medium",
+          "shape": "round",
+          "diameterIn": 12,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 1,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [
+        {
+          "quantity": 5,
+          "category": "breadsticks",
+          "descriptor": "Breadstick",
+          "menuPriceUsd": null
+        },
+        {
+          "quantity": 1,
+          "category": "wings",
+          "descriptor": "Wings, 8 pc",
+          "menuPriceUsd": 10.99
+        }
+      ],
+      "provenance": "manual_secondary",
+      "notes": [
+        "Sources give a range of $21.99–$24.99 depending on market and upgrades; the low end is used. Breadsticks have no sourced à-la-carte price, so this imputes partially — which is the honest outcome and a useful UI case."
+      ],
+      "firstSeen": "2026-07-31T00:00:00.000Z",
+      "lastSeen": "2026-07-31T00:00:00.000Z",
+      "lastVerifiedAt": "2026-07-31T00:00:00.000Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T00:00:00.000Z",
+          "priceUsd": 21.99,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "1efab76e484a9a8d8f75551e65f18428",
+      "chain": "pizza_hut",
+      "dealName": "$7 Deal Lover's — 2 or more items at $7 each",
+      "kind": "multi_pizza",
+      "fulfillment": "carryout",
+      "priceUsd": 14,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": null,
+      "validThrough": null,
+      "sourceUrl": "https://menupedia.us/pizza-hut-menu/",
+      "pizzaItems": [
+        {
+          "quantity": 2,
+          "sizeLabel": "Medium",
+          "shape": "round",
+          "diameterIn": 12,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 1,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "manual_secondary",
+      "notes": [],
+      "firstSeen": "2026-07-31T00:00:00.000Z",
+      "lastSeen": "2026-07-31T00:00:00.000Z",
+      "lastVerifiedAt": "2026-07-31T00:00:00.000Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T00:00:00.000Z",
+          "priceUsd": 14,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "ab18c34ebf3c66a72da9bbdbf7a4b999",
+      "chain": "pizza_hut",
+      "dealName": "Large Tavern Recipe",
+      "kind": "single_pizza",
+      "fulfillment": "carryout",
+      "priceUsd": 12,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": null,
+      "validThrough": null,
+      "sourceUrl": "https://www.dealnews.com/s1337/Pizza-Hut/",
+      "pizzaItems": [
+        {
+          "quantity": 1,
+          "sizeLabel": "Large",
+          "shape": "round",
+          "diameterIn": 14,
+          "crustName": "Tavern",
+          "crustClass": "thin",
+          "toppingCount": 1,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "manual_secondary",
+      "notes": [
+        "Advertised \"as low as $12\", so this is a floor price rather than a fixed one."
+      ],
+      "firstSeen": "2026-07-31T00:00:00.000Z",
+      "lastSeen": "2026-07-31T00:00:00.000Z",
+      "lastVerifiedAt": "2026-07-31T00:00:00.000Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T00:00:00.000Z",
+          "priceUsd": 12,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "70ab1392aa60755a92b9fb56560bf093",
+      "chain": "papa_johns",
+      "dealName": "30% off Large 1-Topping Epic Stuffed Crust",
+      "kind": "single_pizza",
+      "fulfillment": "delivery",
+      "priceUsd": null,
+      "discountPercent": 30,
+      "discountScope": "pizza",
+      "promoCode": null,
+      "validThrough": null,
+      "sourceUrl": "https://www.eatdrinkdeals.com/papa-johns-specials-deals/",
+      "pizzaItems": [
+        {
+          "quantity": 1,
+          "sizeLabel": "Large",
+          "shape": "round",
+          "diameterIn": 13.5,
+          "crustName": "Epic Stuffed Crust",
+          "crustClass": "specialty",
+          "toppingCount": 1,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": 15.19
+        }
+      ],
+      "otherItems": [],
+      "provenance": "manual_secondary",
+      "notes": [
+        "Priced under D6 from the $15.19 Epic Stuffed Crust menu price. Note this deal sits on the disputed 13.5\"/14\" Large — its cost per in² inherits that uncertainty."
+      ],
+      "firstSeen": "2026-07-31T00:00:00.000Z",
+      "lastSeen": "2026-07-31T00:00:00.000Z",
+      "lastVerifiedAt": "2026-07-31T00:00:00.000Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T00:00:00.000Z",
+          "priceUsd": null,
+          "discountPercent": 30
+        }
+      ]
+    },
+    {
+      "fingerprint": "844a1aafb54e8e8a066dd78d53900fb7",
+      "chain": "papa_johns",
+      "dealName": "Two Medium 2-Topping Pizzas, $6 each",
+      "kind": "multi_pizza",
+      "fulfillment": "delivery",
+      "priceUsd": 12,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": null,
+      "validThrough": null,
+      "sourceUrl": "https://www.eatdrinkdeals.com/papa-johns-specials-deals/",
+      "pizzaItems": [
+        {
+          "quantity": 2,
+          "sizeLabel": "Medium",
+          "shape": "round",
+          "diameterIn": 12,
+          "crustName": "Original",
+          "crustClass": "standard",
+          "toppingCount": 2,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "manual_secondary",
+      "notes": [],
+      "firstSeen": "2026-07-31T00:00:00.000Z",
+      "lastSeen": "2026-07-31T00:00:00.000Z",
+      "lastVerifiedAt": "2026-07-31T00:00:00.000Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T00:00:00.000Z",
+          "priceUsd": 12,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "33cc3eda4a16216bd32b5ac1eddadccd",
+      "chain": "papa_johns",
+      "dealName": "Large 2-Topping + 6pc Wings + 2-Liter",
+      "kind": "bundle",
+      "fulfillment": "delivery",
+      "priceUsd": 22,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": null,
+      "validThrough": null,
+      "sourceUrl": "https://www.eatdrinkdeals.com/papa-johns-specials-deals/",
+      "pizzaItems": [
+        {
+          "quantity": 1,
+          "sizeLabel": "Large",
+          "shape": "round",
+          "diameterIn": 13.5,
+          "crustName": "Original",
+          "crustClass": "standard",
+          "toppingCount": 2,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [
+        {
+          "quantity": 1,
+          "category": "wings",
+          "descriptor": "Wings, 6 pc",
+          "menuPriceUsd": null
+        },
+        {
+          "quantity": 1,
+          "category": "drink",
+          "descriptor": "2-liter soda",
+          "menuPriceUsd": null
+        }
+      ],
+      "provenance": "manual_secondary",
+      "notes": [
+        "No à-la-carte price could be sourced for either component, so this bundle cannot be imputed at all. Exercises the BUNDLE_NOT_IMPUTED path: shown at full price with the reason stated, rather than pretending the sides are free."
+      ],
+      "firstSeen": "2026-07-31T00:00:00.000Z",
+      "lastSeen": "2026-07-31T00:00:00.000Z",
+      "lastVerifiedAt": "2026-07-31T00:00:00.000Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T00:00:00.000Z",
+          "priceUsd": 22,
+          "discountPercent": null
+        }
+      ]
+    }
+  ]
+}
