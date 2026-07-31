@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "capturedAt": "2026-07-31T13:44:20.255Z",
+  "capturedAt": "2026-07-31T13:49:38.330Z",
   "pricingLocale": "san-diego-ca",
   "chains": [
     {
@@ -26,91 +26,81 @@
     {
       "chain": "dominos",
       "displayName": "Domino's",
-      "status": "failed",
-      "lastSuccessfulAt": null,
-      "errors": [
-        "No usable coupons in the menu payload (21 were seen but not usable)."
-      ],
+      "status": "partial",
+      "lastSuccessfulAt": "2026-07-31T13:49:38.330Z",
+      "errors": [],
       "unparsed": [
         {
           "raw": "1121 | 50% off Menu Priced Pizzas | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Not offered in the comparison market, so it is not a national deal."
         },
         {
           "raw": "1126 | 20% off your Entire Order | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
         },
         {
           "raw": "3366 | Two Medium 1-Topping Pizzas and Two 16-Piece Bread Bite Orders. Choose from Parmesan, Garlic, and Cinnamon. | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
         },
         {
           "raw": "3742 | Medium 2-Topping Parmesan Stuffed Crust Pizza, 16-pc Parm or Garlic Bread Bites, and 2 Dip Cups | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
         },
         {
           "raw": "4342 | 2 or More Medium 3-Topping Pizzas- Each Priced Individually | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
-        },
-        {
-          "raw": "5057 | 1 Large 3 Topping Pizza – Carryout Only | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
-        },
-        {
-          "raw": "5162 | Any 5-Topping Large Pizza, Medium Pan Pizza, or Small Gluten Free Pizza - Carryout Only | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
         },
         {
           "raw": "5195 | Carry out all pizzas with 1 topping on any of our 6 crusts and 8-piece wings or boneless chicken for $8.99 each. Excludes XL & Specialty Pizzas. Crust availability varies by size. Local stores may charge extra for some toppings and sauces. | 8.99 Carryout Deal",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Not offered in the comparison market, so it is not a national deal."
         },
         {
           "raw": "5198 | Any 2 or more Medium 2-Topping Pizzas, Breads, Loaded Tots, Boneless Chicken, Pastas, Sandwiches, Salads, or Desserts for $7.99 each. | ",
-          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
+          "reason": "Not offered in the comparison market, so it is not a national deal."
         },
         {
           "raw": "5265 | Get any two or more 2-topping Parmesan Stuffed Crust Pizzas for just $11.99 each. Add on any of your favorite items from the Mix & Match menu for just $7.99 each. Receive a free Slice Sauce dip cup from 4/7 through 6/14 with every Handmade Pan or Parmesan Stuffed Crust Pizza ordered. | ",
-          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
+          "reason": "Not offered in the comparison market, so it is not a national deal."
         },
         {
           "raw": "5272 | Two Medium 1-Topping Pizzas and Two 16-Piece Bread Bite Orders. Choose from Parmesan, Garlic, and Cinnamon for $21.99. | ",
-          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
+          "reason": "Not offered in the comparison market, so it is not a national deal."
         },
         {
           "raw": "5385 | 2 or More Large 2 Topping Pizzas- Each Priced Individually | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
         },
         {
           "raw": "6212 | 2 Large 2 Topping Pizzas and an order of Stuffed Cheesy Bread | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Not offered in the comparison market, so it is not a national deal."
         },
         {
           "raw": "8118 | 16 Piece Parmesan or Garlic Bread Bites and a 2-Liter | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
         },
         {
           "raw": "8123 | Add on 16-pc order of Parmesan or Garlic Bread Bites | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
         },
         {
           "raw": "8210 | Add on any 1-2 liter drink | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Not offered in the comparison market, so it is not a national deal."
         },
         {
           "raw": "8225 | Choose any 2-20 Oz Drinks | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
         },
         {
           "raw": "8255 | Choose any 3 Dip Cups for $1.99 | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Not offered in the comparison market, so it is not a national deal."
         },
         {
           "raw": "9013 | 1 Medium 3 Topping Pizza | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
         },
         {
           "raw": "9175 | Any Large Specialty Pizza | ",
-          "reason": "Store-local offer, excluded by the national-only scope."
+          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
         },
         {
           "raw": "9413 | 50% Off All Menu-Priced Pizzas | ",
@@ -174,24 +164,32 @@
       "sizeLabel": "Small",
       "shape": "round",
       "diameterIn": 10,
-      "sourceUrl": "https://www.dominos.com/en/pages/order/#!/section/Coupons/",
-      "provenance": "manual_secondary"
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "provenance": "scraped"
     },
     {
       "chain": "dominos",
       "sizeLabel": "Medium",
       "shape": "round",
       "diameterIn": 12,
-      "sourceUrl": "https://www.dominos.com/en/pages/order/#!/section/Coupons/",
-      "provenance": "manual_secondary"
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "provenance": "scraped"
     },
     {
       "chain": "dominos",
       "sizeLabel": "Large",
       "shape": "round",
       "diameterIn": 14,
-      "sourceUrl": "https://www.dominos.com/en/pages/order/#!/section/Coupons/",
-      "provenance": "manual_secondary"
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "provenance": "scraped"
+    },
+    {
+      "chain": "dominos",
+      "sizeLabel": "X-Large",
+      "shape": "round",
+      "diameterIn": 16,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "provenance": "scraped"
     }
   ],
   "crusts": [
@@ -595,6 +593,92 @@
       ]
     },
     {
+      "fingerprint": "5b5db03f1866156cc09daea161eabf14",
+      "chain": "dominos",
+      "dealName": "1 Large 3 Topping Pizza – Carryout Only",
+      "kind": "single_pizza",
+      "fulfillment": "carryout",
+      "priceUsd": 11.99,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": "5057",
+      "validThrough": null,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "pizzaItems": [
+        {
+          "quantity": 1,
+          "sizeLabel": "Large",
+          "shape": "round",
+          "diameterIn": 14,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 3,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "scraped",
+      "notes": [
+        "No crust named in the offer; assumed Hand Tossed, the default crust."
+      ],
+      "firstSeen": "2026-07-31T13:49:38.330Z",
+      "lastSeen": "2026-07-31T13:49:38.330Z",
+      "lastVerifiedAt": "2026-07-31T13:49:38.330Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T13:49:38.330Z",
+          "priceUsd": 11.99,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "bab9c37b10060200d05c3a8d69e50547",
+      "chain": "dominos",
+      "dealName": "Any 5-Topping Large Pizza, Medium Pan Pizza, or Small Gluten Free Pizza - Carryout Only",
+      "kind": "single_pizza",
+      "fulfillment": "carryout",
+      "priceUsd": 13.99,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": "5162",
+      "validThrough": null,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "pizzaItems": [
+        {
+          "quantity": 1,
+          "sizeLabel": "Large",
+          "shape": "round",
+          "diameterIn": 14,
+          "crustName": "Handmade Pan",
+          "crustClass": "standard",
+          "toppingCount": 5,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "scraped",
+      "notes": [],
+      "firstSeen": "2026-07-31T13:49:38.330Z",
+      "lastSeen": "2026-07-31T13:49:38.330Z",
+      "lastVerifiedAt": "2026-07-31T13:49:38.330Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T13:49:38.330Z",
+          "priceUsd": 13.99,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
       "fingerprint": "ba49cc929a4696e63ab9c8977648597d",
       "chain": "dominos",
       "dealName": "Large 3-Topping Carryout",
@@ -628,7 +712,7 @@
       "firstSeen": "2026-07-31T00:00:00.000Z",
       "lastSeen": "2026-07-31T00:00:00.000Z",
       "lastVerifiedAt": "2026-07-31T00:00:00.000Z",
-      "active": true,
+      "active": false,
       "stale": true,
       "priceHistory": [
         {
@@ -672,7 +756,7 @@
       "firstSeen": "2026-07-31T00:00:00.000Z",
       "lastSeen": "2026-07-31T00:00:00.000Z",
       "lastVerifiedAt": "2026-07-31T00:00:00.000Z",
-      "active": true,
+      "active": false,
       "stale": true,
       "priceHistory": [
         {
@@ -716,7 +800,7 @@
       "firstSeen": "2026-07-31T00:00:00.000Z",
       "lastSeen": "2026-07-31T00:00:00.000Z",
       "lastVerifiedAt": "2026-07-31T00:00:00.000Z",
-      "active": true,
+      "active": false,
       "stale": true,
       "priceHistory": [
         {
@@ -760,7 +844,7 @@
       "firstSeen": "2026-07-31T00:00:00.000Z",
       "lastSeen": "2026-07-31T00:00:00.000Z",
       "lastVerifiedAt": "2026-07-31T00:00:00.000Z",
-      "active": true,
+      "active": false,
       "stale": true,
       "priceHistory": [
         {
