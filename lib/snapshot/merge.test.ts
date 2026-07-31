@@ -248,3 +248,36 @@ describe('snapshot shape', () => {
     expect(merge(null, [result()], DAY1).version).toBe(1);
   });
 });
+
+describe('chains with no scraper', () => {
+  it('are not reported as healthy just because nothing went wrong', () => {
+    // The seed snapshot covers three chains but only Domino's has a scraper. Reporting
+    // "ok" for the other two would claim a successful scrape that never happened.
+    const previous: Snapshot = {
+      version: 1,
+      capturedAt: DAY1.toISOString(),
+      pricingLocale: 'san-diego-ca',
+      chains: CHAINS,
+      chainStatus: [
+        {
+          chain: 'pizza_hut',
+          displayName: 'Pizza Hut',
+          status: 'never_scraped',
+          lastSuccessfulAt: null,
+          errors: [],
+          unparsed: [],
+        },
+      ],
+      sizes: [],
+      crusts: [],
+      componentValues: [],
+      deliveryFees: [],
+      deals: [],
+    };
+
+    const next = merge(previous, [result()], DAY2);
+    const pizzaHut = next.chainStatus.find((s) => s.chain === 'pizza_hut')!;
+    expect(pizzaHut.status).toBe('never_scraped');
+    expect(pizzaHut.lastSuccessfulAt).toBeNull();
+  });
+});

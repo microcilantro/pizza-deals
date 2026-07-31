@@ -80,8 +80,9 @@ async function main() {
   for (const status of snapshot.chainStatus) {
     const deals = snapshot.deals.filter((d) => d.chain === status.chain && d.active);
     const stale = deals.filter((d) => d.stale).length;
+    const label = status.status === 'never_scraped' ? 'no scraper' : status.status;
     console.log(
-      `  ${status.chain.padEnd(12)} ${status.status.padEnd(8)} ` +
+      `  ${status.chain.padEnd(12)} ${label.padEnd(12)} ` +
         `${deals.length} active${stale > 0 ? `, ${stale} stale` : ''}`,
     );
     for (const error of status.errors) console.log(`      ERROR: ${error}`);
@@ -90,7 +91,10 @@ async function main() {
 
   const anyUsable = results.some((r) => r.status !== 'failed');
   if (!anyUsable) {
-    console.error('\nEvery chain failed. Snapshot retains the previous data, marked stale.');
+    console.error(
+      `\nEvery chain scraped this run (${chains.join(', ')}) failed. ` +
+        'The snapshot retains their previous data, marked stale.',
+    );
   }
   process.exit(anyUsable ? 0 : 1);
 }

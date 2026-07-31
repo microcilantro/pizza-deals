@@ -76,8 +76,9 @@ export function seedSnapshot(capturedAt = seedDataset.capturedAt): Snapshot {
     chainStatus: seedDataset.chains.map((c) => ({
       chain: c.slug,
       displayName: c.displayName,
-      // No scraper has ever run against these; they were entered by hand.
-      status: 'ok' as const,
+      // No scraper has ever run against these; they were entered by hand. Reporting
+      // 'ok' here would claim a healthy scrape that never happened.
+      status: 'never_scraped' as const,
       lastSuccessfulAt: null,
       errors: [],
       unparsed: [],

@@ -120,7 +120,8 @@ export interface SnapshotDeliveryFee {
 export interface ChainSnapshotStatus {
   chain: string;
   displayName: string;
-  status: 'ok' | 'partial' | 'failed';
+  /** `never_scraped` means no scraper exists for this chain yet — not that it is healthy. */
+  status: 'ok' | 'partial' | 'failed' | 'never_scraped';
   /** Last time this chain's scrape produced usable data. Null if it never has. */
   lastSuccessfulAt: string | null;
   errors: string[];

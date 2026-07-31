@@ -93,7 +93,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No snapshot change today."
           else
-            git commit -m "data: daily snapshot $(TZ=America/New_York date +%Y-%m-%d)"
+            git commit -m "data: daily snapshot $(date -u +%Y-%m-%d)"
             git push
           fi
 
@@ -113,6 +113,12 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      # The extraction tests drive a real browser. Without this they cannot launch one
+      # and the whole suite fails, which is what broke the first run on main.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
       - run: npm test
 
       - name: Build static site
