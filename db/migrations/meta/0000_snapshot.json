@@ -1,0 +1,1198 @@
+{
+  "id": "71818089-300e-4b63-a5c5-12b9c4d31037",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.chains": {
+      "name": "chains",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "menu_url": {
+          "name": "menu_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deals_url": {
+          "name": "deals_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "chains_slug_unique": {
+          "name": "chains_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.component_values": {
+      "name": "component_values",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descriptor": {
+          "name": "descriptor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "menu_price_usd": {
+          "name": "menu_price_usd",
+          "type": "numeric(6, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pricing_locale": {
+          "name": "pricing_locale",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'san-diego-ca'"
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "observed_at": {
+          "name": "observed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "component_values_chain_id_chains_id_fk": {
+          "name": "component_values_chain_id_chains_id_fk",
+          "tableFrom": "component_values",
+          "tableTo": "chains",
+          "columnsFrom": [
+            "chain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.crust_options": {
+      "name": "crust_options",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "crust_name": {
+          "name": "crust_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "crust_class": {
+          "name": "crust_class",
+          "type": "crust_class",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "observed_upcharge_usd": {
+          "name": "observed_upcharge_usd",
+          "type": "numeric(6, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "first_seen": {
+          "name": "first_seen",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "last_seen": {
+          "name": "last_seen",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "crust_options_chain_id_chains_id_fk": {
+          "name": "crust_options_chain_id_chains_id_fk",
+          "tableFrom": "crust_options",
+          "tableTo": "chains",
+          "columnsFrom": [
+            "chain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "crust_options_chain_name_uq": {
+          "name": "crust_options_chain_name_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "chain_id",
+            "crust_name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.crust_size_availability": {
+      "name": "crust_size_availability",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "crust_option_id": {
+          "name": "crust_option_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "diameter_in": {
+          "name": "diameter_in",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "orderable": {
+          "name": "orderable",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "observed_at": {
+          "name": "observed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "crust_size_availability_crust_option_id_crust_options_id_fk": {
+          "name": "crust_size_availability_crust_option_id_crust_options_id_fk",
+          "tableFrom": "crust_size_availability",
+          "tableTo": "crust_options",
+          "columnsFrom": [
+            "crust_option_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "crust_size_availability_uq": {
+          "name": "crust_size_availability_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "crust_option_id",
+            "diameter_in"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.deal_other_items": {
+      "name": "deal_other_items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "deal_id": {
+          "name": "deal_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descriptor": {
+          "name": "descriptor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "component_value_id": {
+          "name": "component_value_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "deal_other_items_deal_id_deals_id_fk": {
+          "name": "deal_other_items_deal_id_deals_id_fk",
+          "tableFrom": "deal_other_items",
+          "tableTo": "deals",
+          "columnsFrom": [
+            "deal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "deal_other_items_component_value_id_component_values_id_fk": {
+          "name": "deal_other_items_component_value_id_component_values_id_fk",
+          "tableFrom": "deal_other_items",
+          "tableTo": "component_values",
+          "columnsFrom": [
+            "component_value_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.deal_pizza_items": {
+      "name": "deal_pizza_items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "deal_id": {
+          "name": "deal_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "size_label": {
+          "name": "size_label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "shape": {
+          "name": "shape",
+          "type": "pizza_shape",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'round'"
+        },
+        "diameter_in": {
+          "name": "diameter_in",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "length_in": {
+          "name": "length_in",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "width_in": {
+          "name": "width_in",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "size_observation_id": {
+          "name": "size_observation_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "crust_option_id": {
+          "name": "crust_option_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "menu_price_id": {
+          "name": "menu_price_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "topping_count": {
+          "name": "topping_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "topping_policy": {
+          "name": "topping_policy",
+          "type": "topping_policy",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'exact'"
+        },
+        "premium_toppings": {
+          "name": "premium_toppings",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "deal_pizza_items_deal_id_deals_id_fk": {
+          "name": "deal_pizza_items_deal_id_deals_id_fk",
+          "tableFrom": "deal_pizza_items",
+          "tableTo": "deals",
+          "columnsFrom": [
+            "deal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "deal_pizza_items_size_observation_id_size_observations_id_fk": {
+          "name": "deal_pizza_items_size_observation_id_size_observations_id_fk",
+          "tableFrom": "deal_pizza_items",
+          "tableTo": "size_observations",
+          "columnsFrom": [
+            "size_observation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "deal_pizza_items_crust_option_id_crust_options_id_fk": {
+          "name": "deal_pizza_items_crust_option_id_crust_options_id_fk",
+          "tableFrom": "deal_pizza_items",
+          "tableTo": "crust_options",
+          "columnsFrom": [
+            "crust_option_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "deal_pizza_items_menu_price_id_menu_pizza_prices_id_fk": {
+          "name": "deal_pizza_items_menu_price_id_menu_pizza_prices_id_fk",
+          "tableFrom": "deal_pizza_items",
+          "tableTo": "menu_pizza_prices",
+          "columnsFrom": [
+            "menu_price_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "deal_pizza_items_dims_match_shape": {
+          "name": "deal_pizza_items_dims_match_shape",
+          "value": "(\"deal_pizza_items\".\"shape\" = 'round' AND \"deal_pizza_items\".\"diameter_in\" IS NOT NULL)\n          OR (\"deal_pizza_items\".\"shape\" = 'rect' AND \"deal_pizza_items\".\"length_in\" IS NOT NULL AND \"deal_pizza_items\".\"width_in\" IS NOT NULL)"
+        },
+        "deal_pizza_items_qty_positive": {
+          "name": "deal_pizza_items_qty_positive",
+          "value": "\"deal_pizza_items\".\"quantity\" > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.deal_price_history": {
+      "name": "deal_price_history",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "deal_id": {
+          "name": "deal_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "price_usd": {
+          "name": "price_usd",
+          "type": "numeric(6, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "discount_percent": {
+          "name": "discount_percent",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "observed_at": {
+          "name": "observed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "deal_price_history_deal_id_deals_id_fk": {
+          "name": "deal_price_history_deal_id_deals_id_fk",
+          "tableFrom": "deal_price_history",
+          "tableTo": "deals",
+          "columnsFrom": [
+            "deal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.deals": {
+      "name": "deals",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fingerprint": {
+          "name": "fingerprint",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deal_name": {
+          "name": "deal_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "deal_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fulfillment": {
+          "name": "fulfillment",
+          "type": "fulfillment",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "price_usd": {
+          "name": "price_usd",
+          "type": "numeric(6, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "discount_percent": {
+          "name": "discount_percent",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "discount_scope": {
+          "name": "discount_scope",
+          "type": "discount_scope",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pricing_locale": {
+          "name": "pricing_locale",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'san-diego-ca'"
+        },
+        "promo_code": {
+          "name": "promo_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "valid_from": {
+          "name": "valid_from",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "valid_through": {
+          "name": "valid_through",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "national": {
+          "name": "national",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "first_seen": {
+          "name": "first_seen",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "last_seen": {
+          "name": "last_seen",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "last_verified_at": {
+          "name": "last_verified_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "stale": {
+          "name": "stale",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "deals_chain_id_chains_id_fk": {
+          "name": "deals_chain_id_chains_id_fk",
+          "tableFrom": "deals",
+          "tableTo": "chains",
+          "columnsFrom": [
+            "chain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "deals_chain_fingerprint_uq": {
+          "name": "deals_chain_fingerprint_uq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "chain_id",
+            "fingerprint"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "deals_price_or_discount": {
+          "name": "deals_price_or_discount",
+          "value": "\"deals\".\"price_usd\" IS NOT NULL OR \"deals\".\"discount_percent\" IS NOT NULL"
+        },
+        "deals_discount_scope_set": {
+          "name": "deals_discount_scope_set",
+          "value": "\"deals\".\"discount_percent\" IS NULL OR \"deals\".\"discount_scope\" IS NOT NULL"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.delivery_fee_observations": {
+      "name": "delivery_fee_observations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fee_usd": {
+          "name": "fee_usd",
+          "type": "numeric(6, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pricing_locale": {
+          "name": "pricing_locale",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'san-diego-ca'"
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "observed_at": {
+          "name": "observed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "delivery_fee_observations_chain_id_chains_id_fk": {
+          "name": "delivery_fee_observations_chain_id_chains_id_fk",
+          "tableFrom": "delivery_fee_observations",
+          "tableTo": "chains",
+          "columnsFrom": [
+            "chain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.menu_pizza_prices": {
+      "name": "menu_pizza_prices",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "size_label": {
+          "name": "size_label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "crust_option_id": {
+          "name": "crust_option_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "topping_count": {
+          "name": "topping_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "menu_price_usd": {
+          "name": "menu_price_usd",
+          "type": "numeric(6, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pricing_locale": {
+          "name": "pricing_locale",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'san-diego-ca'"
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "observed_at": {
+          "name": "observed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "menu_pizza_prices_chain_id_chains_id_fk": {
+          "name": "menu_pizza_prices_chain_id_chains_id_fk",
+          "tableFrom": "menu_pizza_prices",
+          "tableTo": "chains",
+          "columnsFrom": [
+            "chain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "menu_pizza_prices_crust_option_id_crust_options_id_fk": {
+          "name": "menu_pizza_prices_crust_option_id_crust_options_id_fk",
+          "tableFrom": "menu_pizza_prices",
+          "tableTo": "crust_options",
+          "columnsFrom": [
+            "crust_option_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.scrape_runs": {
+      "name": "scrape_runs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "finished_at": {
+          "name": "finished_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "scrape_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deals_found": {
+          "name": "deals_found",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error_message": {
+          "name": "error_message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "screenshot_path": {
+          "name": "screenshot_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "scrape_runs_chain_id_chains_id_fk": {
+          "name": "scrape_runs_chain_id_chains_id_fk",
+          "tableFrom": "scrape_runs",
+          "tableTo": "chains",
+          "columnsFrom": [
+            "chain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.size_observations": {
+      "name": "size_observations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "size_label": {
+          "name": "size_label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "crust_option_id": {
+          "name": "crust_option_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shape": {
+          "name": "shape",
+          "type": "pizza_shape",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'round'"
+        },
+        "diameter_in": {
+          "name": "diameter_in",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "length_in": {
+          "name": "length_in",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "width_in": {
+          "name": "width_in",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "observed_at": {
+          "name": "observed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "size_observations_chain_id_chains_id_fk": {
+          "name": "size_observations_chain_id_chains_id_fk",
+          "tableFrom": "size_observations",
+          "tableTo": "chains",
+          "columnsFrom": [
+            "chain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "size_observations_crust_option_id_crust_options_id_fk": {
+          "name": "size_observations_crust_option_id_crust_options_id_fk",
+          "tableFrom": "size_observations",
+          "tableTo": "crust_options",
+          "columnsFrom": [
+            "crust_option_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "size_observations_dims_match_shape": {
+          "name": "size_observations_dims_match_shape",
+          "value": "(\"size_observations\".\"shape\" = 'round' AND \"size_observations\".\"diameter_in\" IS NOT NULL AND \"size_observations\".\"length_in\" IS NULL AND \"size_observations\".\"width_in\" IS NULL)\n          OR (\"size_observations\".\"shape\" = 'rect' AND \"size_observations\".\"diameter_in\" IS NULL AND \"size_observations\".\"length_in\" IS NOT NULL AND \"size_observations\".\"width_in\" IS NOT NULL)"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.crust_class": {
+      "name": "crust_class",
+      "schema": "public",
+      "values": [
+        "standard",
+        "thin",
+        "specialty"
+      ]
+    },
+    "public.deal_kind": {
+      "name": "deal_kind",
+      "schema": "public",
+      "values": [
+        "single_pizza",
+        "multi_pizza",
+        "bundle"
+      ]
+    },
+    "public.discount_scope": {
+      "name": "discount_scope",
+      "schema": "public",
+      "values": [
+        "pizza",
+        "order"
+      ]
+    },
+    "public.fulfillment": {
+      "name": "fulfillment",
+      "schema": "public",
+      "values": [
+        "carryout",
+        "delivery"
+      ]
+    },
+    "public.pizza_shape": {
+      "name": "pizza_shape",
+      "schema": "public",
+      "values": [
+        "round",
+        "rect"
+      ]
+    },
+    "public.pricing_basis": {
+      "name": "pricing_basis",
+      "schema": "public",
+      "values": [
+        "advertised",
+        "derived_from_discount"
+      ]
+    },
+    "public.scrape_status": {
+      "name": "scrape_status",
+      "schema": "public",
+      "values": [
+        "ok",
+        "partial",
+        "failed"
+      ]
+    },
+    "public.topping_policy": {
+      "name": "topping_policy",
+      "schema": "public",
+      "values": [
+        "exact",
+        "up_to",
+        "unlimited",
+        "specialty_fixed"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

@@ -32,6 +32,10 @@ lambda, and it composes cleanly with the Neon HTTP driver.
 
 ## 1. Schema
 
+> The DDL below is the narrative version, kept for the reasoning around it. Once
+> implemented, `db/schema.ts` is authoritative and this section may lag it. Decisions
+> D1–D6 in §4 are reflected in the implementation.
+
 The one structural decision that drives everything else: **a deal is not a row with a
 pizza in it.** "Two mediums plus breadsticks and a 2-liter" does not fit a flat table —
 you cannot put two diameters in one `size_diameter_in` column. So the model is
@@ -393,14 +397,22 @@ Flagging these now rather than discovering them in step 5.
    `premiumToppings` records it; the secondary metric is unreliable across chains
    regardless, which is part of why it stays secondary.
 6. **Deals that are only a discount, not a price.** "50% off online orders" has no
-   absolute price and cannot produce a cost per in² at all. Proposal: store it, mark it
-   unrankable, and show it in a separate "percentage offers" list rather than faking a
-   price. Currently no schema support — see Q6.
+   absolute price. Resolved by D6: priced from the scraped base menu price, flagged as
+   derived. Unrankable only when the menu price cannot be found.
 7. **Mix-and-match tiers.** "$6.99 each when you buy 2+" is per-item pricing with a
    quantity gate. Representable as a multi-pizza deal at $13.98, but the advertised unit
    is different from the modeled unit, so the UI must show the chain's phrasing verbatim
    alongside our number.
-8. **National-only discipline.** Chains render prices against a default or geolocated
+8. **Mixed-crust-class deals.** A two-pizza deal where the customer picks crust per
+   pizza can span crust classes, so the deal has no single class to segment on.
+   `rankDeals` refuses these rather than picking one, returning them in `ungrouped` with
+   reason `MIXED_CRUST_CLASS`.
+9. **Order-level percentage discounts.** "25% off your entire order" applies to pizza
+   and non-pizza items together, so the discount and the bundle imputation interact —
+   crediting a side at full menu price against a discounted order double-counts.
+   `discount_applies_to` records the scope; order-level discounts on bundles are marked
+   unrankable in v1 rather than modeled wrong.
+10. **National-only discipline.** Chains render prices against a default or geolocated
    store even on national pages. The scraper needs a fixed reference locale so prices
    are consistent day-over-day, and anything the page marks as store-specific gets
    dropped. Worth deciding the reference locale explicitly — see Q4.
@@ -430,17 +442,26 @@ identical diameter multiset and is exposed as a "like-for-like only" filter.
 can source and cite. It is generous to bundles, so the itemized credit is always shown —
 the UI lists each component and the menu price used, per the worked example above.
 
+**D5 — Reference market: San Diego, CA.** All scraping runs against one fixed San Diego
+locale, recorded per row in `pricing_locale`. Prices are labeled in the UI as reference
+pricing for that market, with a link out to the chain so a user can confirm at their own
+store. No per-user ZIP entry: it would force request-time scraping of three chains per
+page view, and it would change the product's claim from "what the national deals are
+worth" to "what your local store charges." `pricing_locale` exists on every priced row
+so that adding markets later is a new dimension rather than a migration of every row.
+
+**D6 — Percentage-off deals are priced from the scraped menu.** "50% off all pizzas"
+has no advertised dollar amount, but we already scrape each chain's menu for diameters
+and component values. Capturing base pizza menu prices too makes these deals rankable:
+50% off a $16.99 large is $8.50, with real area behind it. Priced this way they carry
+`pricing_basis = 'derived_from_discount'` and an assumption naming the menu price used.
+If the menu price is missing, the deal is unrankable rather than guessed.
+
 ## 5. Still open
 
-**Q5 — Reference locale for national pricing.** Chains render prices against a default
-or geolocated store even on national pages. The scrapers need one fixed, documented
-locale so day-over-day comparisons stay valid. Any preference, or should I pick a
-large-market ZIP where all three chains operate corporate stores and document it?
-
-**Q6 — Discount-only offers in v1.** "50% off online orders" has no absolute price and
-can produce no cost per in². Including them means making `price_usd` nullable and adding
-`discount_percent`, plus a separate unrankable list in the UI. Excluding them keeps the
-schema tighter. Currently modeled as excluded — say if you want them in.
+Nothing blocking. Items deferred by decision: per-market pricing beyond San Diego (D5),
+and order-level percentage discounts that span pizza and non-pizza items (see edge case
+9 below).
 
 ---
 
