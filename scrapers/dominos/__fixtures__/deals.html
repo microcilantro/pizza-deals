@@ -1,0 +1,50 @@
+<!--
+  SYNTHETIC FIXTURE — not captured from dominos.com.
+
+  This build environment cannot reach the live site, so this file is a reconstruction of
+  the structure the extractor expects, written to document that assumption and to
+  exercise the extraction code paths (selector fallback order, missing fields, cards
+  that must be rejected).
+
+  It proves the machinery works. It does NOT prove the selectors match the real page.
+  When the first live run happens, replace this file with a genuine captured page and
+  the same tests become a real regression suite.
+-->
+<div id="coupon-list">
+  <div data-quid="coupon-card-1">
+    <h3 data-quid="coupon-card-1-title">Large 3-Topping Pizza</h3>
+    <p data-quid="coupon-card-1-description">Carryout only. Monday through Thursday.</p>
+    <span data-quid="coupon-card-1-price">$7.99</span>
+    <span data-quid="coupon-card-1-service-method">Carryout</span>
+  </div>
+
+  <div data-quid="coupon-card-2">
+    <h3 data-quid="coupon-card-2-title">Mix &amp; Match</h3>
+    <p data-quid="coupon-card-2-description">
+      2 or more items at $6.99 each. Medium 2-topping pizzas. Delivery available.
+    </p>
+    <span data-quid="coupon-card-2-price">$6.99</span>
+    <span data-quid="coupon-card-2-service-method">Delivery</span>
+  </div>
+
+  <div data-quid="coupon-card-3">
+    <h3 data-quid="coupon-card-3-title">$9.99 Large, Any Crust, Any Toppings</h3>
+    <p data-quid="coupon-card-3-description">Up to 7 toppings. Carryout. Offer ends 2026-08-03.</p>
+    <span data-quid="coupon-card-3-price">$9.99</span>
+    <span data-quid="coupon-card-3-service-method">Carryout</span>
+  </div>
+
+  <!-- Perfectly real offer that our model cannot rank: no pizza in it. -->
+  <div data-quid="coupon-card-4">
+    <h3 data-quid="coupon-card-4-title">8 pc Wings</h3>
+    <p data-quid="coupon-card-4-description">Carryout only.</p>
+    <span data-quid="coupon-card-4-price">$7.99</span>
+    <span data-quid="coupon-card-4-service-method">Carryout</span>
+  </div>
+
+  <!-- Missing price and discount: must be reported, not silently dropped. -->
+  <div data-quid="coupon-card-5">
+    <h3 data-quid="coupon-card-5-title">Free delivery week</h3>
+    <p data-quid="coupon-card-5-description">Large pizza. Delivery.</p>
+  </div>
+</div>
