@@ -104,6 +104,16 @@ create table size_observations (
   )
 );
 
+-- Observed delivery fees, per decision D1. Kept as observations rather than a column
+-- on chains because fees move and we want the history.
+create table delivery_fee_observations (
+  id          serial primary key,
+  chain_id    int  not null references chains(id),
+  fee_usd     numeric(6,2) not null,
+  source_url  text not null,
+  observed_at timestamptz not null default now()
+);
+
 -- À-la-carte menu prices, used to impute pizza-only value out of bundles (req. 4).
 create table component_values (
   id            serial primary key,
@@ -296,9 +306,17 @@ export interface Assumption {
   message: string;                      // rendered verbatim in the UI
 }
 
+export interface NormalizationOptions {
+  componentValues: ComponentValueLookup;
+  deliveryFees: DeliveryFeeLookup;
+  includeDeliveryFee: boolean;          // D1: default false, UI toggle
+  componentCreditFactor: number;        // D4: default 1.0 (full menu price)
+  comparability: ComparabilityMode;     // D3: default 'area'
+}
+
 export interface DealMetrics {
   totalAreaSqIn: number;
-  effectivePriceUsd: number;
+  effectivePriceUsd: number;            // includes delivery fee only when D1 toggle is on
   costPerSqIn: number;
   basis: MetricBasis;
   costPerToppingSlot: number | null;    // null when policy is 'unlimited'
@@ -367,7 +385,7 @@ Flagging these now rather than discovering them in step 5.
    separately, and neither is derived from the other.
 3. **Thin crust.** Same area as hand-tossed, typically same price, meaningfully less
    food. Cost per in² cannot see the difference. It is not premium and it is not
-   equivalent to standard — hence a third class. See question Q2.
+   equivalent to standard — hence a third class (D2).
 4. **Unlimited-topping deals.** "Any pizza, any toppings, $X" has no topping count.
    `topping_policy = 'unlimited'` and `costPerToppingSlot` returns null rather than
    dividing by a guess.
@@ -377,8 +395,7 @@ Flagging these now rather than discovering them in step 5.
 6. **Deals that are only a discount, not a price.** "50% off online orders" has no
    absolute price and cannot produce a cost per in² at all. Proposal: store it, mark it
    unrankable, and show it in a separate "percentage offers" list rather than faking a
-   price. Currently no schema support — I would add a nullable `discount_percent` and
-   make `price_usd` nullable if you want these in v1.
+   price. Currently no schema support — see Q6.
 7. **Mix-and-match tiers.** "$6.99 each when you buy 2+" is per-item pricing with a
    quantity gate. Representable as a multi-pizza deal at $13.98, but the advertised unit
    is different from the modeled unit, so the UI must show the chain's phrasing verbatim
@@ -390,41 +407,44 @@ Flagging these now rather than discovering them in step 5.
 
 ---
 
-## 4. Open questions
+## 4. Resolved decisions
 
-**Q1 — Delivery fees.** Requirement 5 makes carryout and delivery separate rows, which
-handles the menu-price gap. But a delivery deal also carries a delivery fee that is
-often larger than the price difference: a $9.99 delivery pizza plus a $4.99 fee is
-effectively $14.98, and comparing its sticker price against a carryout deal understates
-the gap badly. Should the model store an observed per-chain delivery fee and offer an
-"include delivery fee" toggle, or stay strictly at sticker price?
+**D1 — Delivery fees: stored, off by default, UI toggle.** Scrape an observed per-chain
+delivery fee into `delivery_fee_observations`. The default ranking uses sticker price so
+our numbers match what the chain advertises; an "include delivery fee" toggle recomputes
+`effectivePriceUsd` and therefore cost per in². When the toggle is on, the fee is
+attributed as an `Assumption` with its source and observation date, since a scraped fee
+is a weaker fact than a scraped menu price.
 
-**Q2 — Thin crust.** Three classes (`standard` / `thin` / `specialty`) or two, with thin
-folded into standard? Three is more honest and costs a filter chip; two is simpler and
-slightly overstates thin crust's value.
+**D2 — Three crust classes:** `standard` / `thin` / `specialty`. Thin is its own
+segment and its own filter chip, never ranked against hand-tossed.
 
-**Q3 — Default ranking strictness.** Requirement 3 says two deals are comparable only
-when diameter and crust match. Strictly applied, a 2×12" deal never ranks against a
-1×14" deal, which fragments the list into many small segments. Options: (a) strict —
-segment by exact diameter multiset, headline list is only same-size deals; (b) area-based
-— rank anything with matching crust class and fulfillment on cost per in², regardless of
-how the area is composed, with the size mix shown per row. I lean (b) for the headline
-list with (a) available as a filter, but this is your call since it is the central
-comparison claim.
+**D3 — Area-based ranking by default, strict matching as a filter.** The headline list
+ranks on cost per in² within (crust class × fulfillment), regardless of how the area is
+composed, and every row displays its size mix so a 2×12" deal is visibly distinct from a
+1×14" one. `ComparabilityMode = 'area' | 'strict'`; `'strict'` additionally requires an
+identical diameter multiset and is exposed as a "like-for-like only" filter.
 
-**Q4 — Bundle component valuation.** Credit non-pizza items at full à-la-carte menu
-price (generous to bundles), at a haircut (say 70%, reflecting that nobody values a
-bundled 2-liter at menu price), or show both bounds as a range? I lean full menu price
-as the default because it is the only number we can actually source and cite, with the
-haircut as a configurable option — but a range is the most honest presentation.
+**D4 — Bundle components credited at full à-la-carte menu price.**
+`componentCreditFactor` defaults to `1.0` and is configurable. This is the only figure we
+can source and cite. It is generous to bundles, so the itemized credit is always shown —
+the UI lists each component and the menu price used, per the worked example above.
 
-Additionally, and lower stakes: what reference locale should the scrapers use for
-national pricing? It needs to be fixed and documented so day-over-day comparisons are
-valid.
+## 5. Still open
+
+**Q5 — Reference locale for national pricing.** Chains render prices against a default
+or geolocated store even on national pages. The scrapers need one fixed, documented
+locale so day-over-day comparisons stay valid. Any preference, or should I pick a
+large-market ZIP where all three chains operate corporate stores and document it?
+
+**Q6 — Discount-only offers in v1.** "50% off online orders" has no absolute price and
+can produce no cost per in². Including them means making `price_usd` nullable and adding
+`discount_percent`, plus a separate unrankable list in the UI. Excluding them keeps the
+schema tighter. Currently modeled as excluded — say if you want them in.
 
 ---
 
-## 5. What happens after review
+## 6. What happens after review
 
 Unchanged from the agreed build order — schema and normalization land first with unit
 tests covering the bundle and premium-crust cases above, then the seed data, then
