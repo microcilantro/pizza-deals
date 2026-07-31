@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "capturedAt": "2026-07-31T13:49:38.330Z",
+  "capturedAt": "2026-07-31T14:41:39.594Z",
   "pricingLocale": "san-diego-ca",
   "chains": [
     {
@@ -27,7 +27,7 @@
       "chain": "dominos",
       "displayName": "Domino's",
       "status": "partial",
-      "lastSuccessfulAt": "2026-07-31T13:49:38.330Z",
+      "lastSuccessfulAt": "2026-07-31T14:41:39.594Z",
       "errors": [],
       "unparsed": [
         {
@@ -35,20 +35,8 @@
           "reason": "Not offered in the comparison market, so it is not a national deal."
         },
         {
-          "raw": "1126 | 20% off your Entire Order | ",
-          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
-        },
-        {
-          "raw": "3366 | Two Medium 1-Topping Pizzas and Two 16-Piece Bread Bite Orders. Choose from Parmesan, Garlic, and Cinnamon. | ",
-          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
-        },
-        {
-          "raw": "3742 | Medium 2-Topping Parmesan Stuffed Crust Pizza, 16-pc Parm or Garlic Bread Bites, and 2 Dip Cups | ",
-          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
-        },
-        {
-          "raw": "4342 | 2 or More Medium 3-Topping Pizzas- Each Priced Individually | ",
-          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
+          "raw": "20% off your Entire Order |  | ",
+          "reason": "Offer does not appear to contain a pizza."
         },
         {
           "raw": "5195 | Carry out all pizzas with 1 topping on any of our 6 crusts and 8-piece wings or boneless chicken for $8.99 each. Excludes XL & Specialty Pizzas. Crust availability varies by size. Local stores may charge extra for some toppings and sauces. | 8.99 Carryout Deal",
@@ -67,44 +55,32 @@
           "reason": "Not offered in the comparison market, so it is not a national deal."
         },
         {
-          "raw": "5385 | 2 or More Large 2 Topping Pizzas- Each Priced Individually | ",
-          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
-        },
-        {
           "raw": "6212 | 2 Large 2 Topping Pizzas and an order of Stuffed Cheesy Bread | ",
           "reason": "Not offered in the comparison market, so it is not a national deal."
         },
         {
-          "raw": "8118 | 16 Piece Parmesan or Garlic Bread Bites and a 2-Liter | ",
-          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
+          "raw": "16 Piece Parmesan or Garlic Bread Bites and a 2-Liter |  | $8.99",
+          "reason": "Offer does not appear to contain a pizza."
         },
         {
-          "raw": "8123 | Add on 16-pc order of Parmesan or Garlic Bread Bites | ",
-          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
+          "raw": "Add on 16-pc order of Parmesan or Garlic Bread Bites |  | $3.99",
+          "reason": "Offer does not appear to contain a pizza."
         },
         {
           "raw": "8210 | Add on any 1-2 liter drink | ",
           "reason": "Not offered in the comparison market, so it is not a national deal."
         },
         {
-          "raw": "8225 | Choose any 2-20 Oz Drinks | ",
-          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
+          "raw": "Choose any 2-20 Oz Drinks |  | $2.99",
+          "reason": "Offer does not appear to contain a pizza."
         },
         {
           "raw": "8255 | Choose any 3 Dip Cups for $1.99 | ",
           "reason": "Not offered in the comparison market, so it is not a national deal."
         },
         {
-          "raw": "9013 | 1 Medium 3 Topping Pizza | ",
-          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
-        },
-        {
-          "raw": "9175 | Any Large Specialty Pizza | ",
-          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
-        },
-        {
-          "raw": "9413 | 50% Off All Menu-Priced Pizzas | ",
-          "reason": "Coupon states no valid service method, and carryout and delivery are separate rows that must not be guessed at."
+          "raw": "50% Off All Menu-Priced Pizzas |  | ",
+          "reason": "No size label found, so the diameter cannot be resolved from the menu."
         }
       ]
     },
@@ -593,6 +569,278 @@
       ]
     },
     {
+      "fingerprint": "ea34984941fcd4236efd71e58c349f27",
+      "chain": "dominos",
+      "dealName": "Two Medium 1-Topping Pizzas and Two 16-Piece Bread Bite Orders. Choose from Parmesan, Garlic, and Cinnamon.",
+      "kind": "multi_pizza",
+      "fulfillment": "carryout",
+      "priceUsd": 23.99,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": "3366",
+      "validThrough": null,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "pizzaItems": [
+        {
+          "quantity": 2,
+          "sizeLabel": "Medium",
+          "shape": "round",
+          "diameterIn": 12,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 1,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "scraped",
+      "notes": [
+        "No crust named in the offer; assumed Hand Tossed, the default crust.",
+        "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
+      ],
+      "firstSeen": "2026-07-31T14:41:39.594Z",
+      "lastSeen": "2026-07-31T14:41:39.594Z",
+      "lastVerifiedAt": "2026-07-31T14:41:39.594Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T14:41:39.594Z",
+          "priceUsd": 23.99,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "a448c4e4de2d2b6598e1d2e07cc8d675",
+      "chain": "dominos",
+      "dealName": "Two Medium 1-Topping Pizzas and Two 16-Piece Bread Bite Orders. Choose from Parmesan, Garlic, and Cinnamon.",
+      "kind": "multi_pizza",
+      "fulfillment": "delivery",
+      "priceUsd": 23.99,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": "3366",
+      "validThrough": null,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "pizzaItems": [
+        {
+          "quantity": 2,
+          "sizeLabel": "Medium",
+          "shape": "round",
+          "diameterIn": 12,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 1,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "scraped",
+      "notes": [
+        "No crust named in the offer; assumed Hand Tossed, the default crust.",
+        "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
+      ],
+      "firstSeen": "2026-07-31T14:41:39.594Z",
+      "lastSeen": "2026-07-31T14:41:39.594Z",
+      "lastVerifiedAt": "2026-07-31T14:41:39.594Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T14:41:39.594Z",
+          "priceUsd": 23.99,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "35d98a0ba50039e156dc21d8cbce514a",
+      "chain": "dominos",
+      "dealName": "Medium 2-Topping Parmesan Stuffed Crust Pizza, 16-pc Parm or Garlic Bread Bites, and 2 Dip Cups",
+      "kind": "single_pizza",
+      "fulfillment": "carryout",
+      "priceUsd": 19.99,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": "3742",
+      "validThrough": null,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "pizzaItems": [
+        {
+          "quantity": 1,
+          "sizeLabel": "Medium",
+          "shape": "round",
+          "diameterIn": 12,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 2,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "scraped",
+      "notes": [
+        "No crust named in the offer; assumed Hand Tossed, the default crust.",
+        "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
+      ],
+      "firstSeen": "2026-07-31T14:41:39.594Z",
+      "lastSeen": "2026-07-31T14:41:39.594Z",
+      "lastVerifiedAt": "2026-07-31T14:41:39.594Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T14:41:39.594Z",
+          "priceUsd": 19.99,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "aa66c8caf0e0be17d586790a5d825127",
+      "chain": "dominos",
+      "dealName": "Medium 2-Topping Parmesan Stuffed Crust Pizza, 16-pc Parm or Garlic Bread Bites, and 2 Dip Cups",
+      "kind": "single_pizza",
+      "fulfillment": "delivery",
+      "priceUsd": 19.99,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": "3742",
+      "validThrough": null,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "pizzaItems": [
+        {
+          "quantity": 1,
+          "sizeLabel": "Medium",
+          "shape": "round",
+          "diameterIn": 12,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 2,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "scraped",
+      "notes": [
+        "No crust named in the offer; assumed Hand Tossed, the default crust.",
+        "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
+      ],
+      "firstSeen": "2026-07-31T14:41:39.594Z",
+      "lastSeen": "2026-07-31T14:41:39.594Z",
+      "lastVerifiedAt": "2026-07-31T14:41:39.594Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T14:41:39.594Z",
+          "priceUsd": 19.99,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "3539b0bcf7f200054db0cfc38aa6bf2f",
+      "chain": "dominos",
+      "dealName": "2 or More Medium 3-Topping Pizzas- Each Priced Individually",
+      "kind": "multi_pizza",
+      "fulfillment": "carryout",
+      "priceUsd": 21.98,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": "4342",
+      "validThrough": null,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "pizzaItems": [
+        {
+          "quantity": 2,
+          "sizeLabel": "Medium",
+          "shape": "round",
+          "diameterIn": 12,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 3,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "scraped",
+      "notes": [
+        "No crust named in the offer; assumed Hand Tossed, the default crust.",
+        "Advertised per item at $10.99 each with a minimum of 2; modeled as the 2-item combination.",
+        "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
+      ],
+      "firstSeen": "2026-07-31T14:41:39.594Z",
+      "lastSeen": "2026-07-31T14:41:39.594Z",
+      "lastVerifiedAt": "2026-07-31T14:41:39.594Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T14:41:39.594Z",
+          "priceUsd": 21.98,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "090b64e315cdb3462a1859f54a69225f",
+      "chain": "dominos",
+      "dealName": "2 or More Medium 3-Topping Pizzas- Each Priced Individually",
+      "kind": "multi_pizza",
+      "fulfillment": "delivery",
+      "priceUsd": 21.98,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": "4342",
+      "validThrough": null,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "pizzaItems": [
+        {
+          "quantity": 2,
+          "sizeLabel": "Medium",
+          "shape": "round",
+          "diameterIn": 12,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 3,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "scraped",
+      "notes": [
+        "No crust named in the offer; assumed Hand Tossed, the default crust.",
+        "Advertised per item at $10.99 each with a minimum of 2; modeled as the 2-item combination.",
+        "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
+      ],
+      "firstSeen": "2026-07-31T14:41:39.594Z",
+      "lastSeen": "2026-07-31T14:41:39.594Z",
+      "lastVerifiedAt": "2026-07-31T14:41:39.594Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T14:41:39.594Z",
+          "priceUsd": 21.98,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
       "fingerprint": "5b5db03f1866156cc09daea161eabf14",
       "chain": "dominos",
       "dealName": "1 Large 3 Topping Pizza – Carryout Only",
@@ -624,8 +872,8 @@
         "No crust named in the offer; assumed Hand Tossed, the default crust."
       ],
       "firstSeen": "2026-07-31T13:49:38.330Z",
-      "lastSeen": "2026-07-31T13:49:38.330Z",
-      "lastVerifiedAt": "2026-07-31T13:49:38.330Z",
+      "lastSeen": "2026-07-31T14:41:39.594Z",
+      "lastVerifiedAt": "2026-07-31T14:41:39.594Z",
       "active": true,
       "stale": false,
       "priceHistory": [
@@ -666,14 +914,286 @@
       "provenance": "scraped",
       "notes": [],
       "firstSeen": "2026-07-31T13:49:38.330Z",
-      "lastSeen": "2026-07-31T13:49:38.330Z",
-      "lastVerifiedAt": "2026-07-31T13:49:38.330Z",
+      "lastSeen": "2026-07-31T14:41:39.594Z",
+      "lastVerifiedAt": "2026-07-31T14:41:39.594Z",
       "active": true,
       "stale": false,
       "priceHistory": [
         {
           "observedAt": "2026-07-31T13:49:38.330Z",
           "priceUsd": 13.99,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "7f2214261cda215068f80338d0eeeef5",
+      "chain": "dominos",
+      "dealName": "2 or More Large 2 Topping Pizzas- Each Priced Individually",
+      "kind": "multi_pizza",
+      "fulfillment": "carryout",
+      "priceUsd": 27.98,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": "5385",
+      "validThrough": null,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "pizzaItems": [
+        {
+          "quantity": 2,
+          "sizeLabel": "Large",
+          "shape": "round",
+          "diameterIn": 14,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 2,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "scraped",
+      "notes": [
+        "No crust named in the offer; assumed Hand Tossed, the default crust.",
+        "Advertised per item at $13.99 each with a minimum of 2; modeled as the 2-item combination.",
+        "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
+      ],
+      "firstSeen": "2026-07-31T14:41:39.594Z",
+      "lastSeen": "2026-07-31T14:41:39.594Z",
+      "lastVerifiedAt": "2026-07-31T14:41:39.594Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T14:41:39.594Z",
+          "priceUsd": 27.98,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "a2d0ec18d9a8a994b30cc67b4e1dcec5",
+      "chain": "dominos",
+      "dealName": "2 or More Large 2 Topping Pizzas- Each Priced Individually",
+      "kind": "multi_pizza",
+      "fulfillment": "delivery",
+      "priceUsd": 27.98,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": "5385",
+      "validThrough": null,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "pizzaItems": [
+        {
+          "quantity": 2,
+          "sizeLabel": "Large",
+          "shape": "round",
+          "diameterIn": 14,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 2,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "scraped",
+      "notes": [
+        "No crust named in the offer; assumed Hand Tossed, the default crust.",
+        "Advertised per item at $13.99 each with a minimum of 2; modeled as the 2-item combination.",
+        "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
+      ],
+      "firstSeen": "2026-07-31T14:41:39.594Z",
+      "lastSeen": "2026-07-31T14:41:39.594Z",
+      "lastVerifiedAt": "2026-07-31T14:41:39.594Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T14:41:39.594Z",
+          "priceUsd": 27.98,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "047da7cf12657b8194feafd3891a9a98",
+      "chain": "dominos",
+      "dealName": "1 Medium 3 Topping Pizza",
+      "kind": "single_pizza",
+      "fulfillment": "carryout",
+      "priceUsd": 14.99,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": "9013",
+      "validThrough": null,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "pizzaItems": [
+        {
+          "quantity": 1,
+          "sizeLabel": "Medium",
+          "shape": "round",
+          "diameterIn": 12,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 3,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "scraped",
+      "notes": [
+        "No crust named in the offer; assumed Hand Tossed, the default crust.",
+        "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
+      ],
+      "firstSeen": "2026-07-31T14:41:39.594Z",
+      "lastSeen": "2026-07-31T14:41:39.594Z",
+      "lastVerifiedAt": "2026-07-31T14:41:39.594Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T14:41:39.594Z",
+          "priceUsd": 14.99,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "7ac59fc0dff7419602977511b64653fb",
+      "chain": "dominos",
+      "dealName": "1 Medium 3 Topping Pizza",
+      "kind": "single_pizza",
+      "fulfillment": "delivery",
+      "priceUsd": 14.99,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": "9013",
+      "validThrough": null,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "pizzaItems": [
+        {
+          "quantity": 1,
+          "sizeLabel": "Medium",
+          "shape": "round",
+          "diameterIn": 12,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": 3,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "scraped",
+      "notes": [
+        "No crust named in the offer; assumed Hand Tossed, the default crust.",
+        "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
+      ],
+      "firstSeen": "2026-07-31T14:41:39.594Z",
+      "lastSeen": "2026-07-31T14:41:39.594Z",
+      "lastVerifiedAt": "2026-07-31T14:41:39.594Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T14:41:39.594Z",
+          "priceUsd": 14.99,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "e26d5ccf04b8f768b60654eecf2446bd",
+      "chain": "dominos",
+      "dealName": "Any Large Specialty Pizza",
+      "kind": "single_pizza",
+      "fulfillment": "carryout",
+      "priceUsd": 16.99,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": "9175",
+      "validThrough": null,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "pizzaItems": [
+        {
+          "quantity": 1,
+          "sizeLabel": "Large",
+          "shape": "round",
+          "diameterIn": 14,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": null,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "scraped",
+      "notes": [
+        "No crust named in the offer; assumed Hand Tossed, the default crust.",
+        "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
+      ],
+      "firstSeen": "2026-07-31T14:41:39.594Z",
+      "lastSeen": "2026-07-31T14:41:39.594Z",
+      "lastVerifiedAt": "2026-07-31T14:41:39.594Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T14:41:39.594Z",
+          "priceUsd": 16.99,
+          "discountPercent": null
+        }
+      ]
+    },
+    {
+      "fingerprint": "4f205297148d968a4be76c8c0b4fdd85",
+      "chain": "dominos",
+      "dealName": "Any Large Specialty Pizza",
+      "kind": "single_pizza",
+      "fulfillment": "delivery",
+      "priceUsd": 16.99,
+      "discountPercent": null,
+      "discountScope": null,
+      "promoCode": "9175",
+      "validThrough": null,
+      "sourceUrl": "https://order.dominos.com/power/store/7723/menu?lang=en&structured=true",
+      "pizzaItems": [
+        {
+          "quantity": 1,
+          "sizeLabel": "Large",
+          "shape": "round",
+          "diameterIn": 14,
+          "crustName": "Hand Tossed",
+          "crustClass": "standard",
+          "toppingCount": null,
+          "toppingPolicy": "exact",
+          "premiumToppings": false,
+          "menuPriceUsd": null
+        }
+      ],
+      "otherItems": [],
+      "provenance": "scraped",
+      "notes": [
+        "No crust named in the offer; assumed Hand Tossed, the default crust.",
+        "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
+      ],
+      "firstSeen": "2026-07-31T14:41:39.594Z",
+      "lastSeen": "2026-07-31T14:41:39.594Z",
+      "lastVerifiedAt": "2026-07-31T14:41:39.594Z",
+      "active": true,
+      "stale": false,
+      "priceHistory": [
+        {
+          "observedAt": "2026-07-31T14:41:39.594Z",
+          "priceUsd": 16.99,
           "discountPercent": null
         }
       ]
