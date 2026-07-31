@@ -5,8 +5,13 @@ name: Diagnose selectors
 on:
   workflow_dispatch:
     inputs:
+      mode:
+        description: 'dom = rendered page structure, api = ordering endpoints'
+        type: choice
+        options: [dom, api]
+        default: dom
       chain:
-        description: 'Chain to diagnose'
+        description: 'Chain to diagnose (dom mode only)'
         type: choice
         options: [dominos]
         default: dominos
@@ -25,5 +30,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - name: Diagnose
+      - name: Diagnose rendered DOM
+        if: inputs.mode == 'dom'
         run: npx tsx scrapers/diagnose.ts ${{ inputs.chain }}
+
+      - name: Diagnose ordering endpoints
+        if: inputs.mode == 'api'
+        run: npx tsx scrapers/diagnose-api.ts
