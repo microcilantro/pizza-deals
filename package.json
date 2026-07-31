@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "scrape": "tsx scrapers/run.ts",
-    "snapshot:seed": "tsx scripts/seed-snapshot.ts"
+    "snapshot:seed": "tsx scripts/seed-snapshot.ts",
+    "diagnose": "tsx scrapers/diagnose.ts"
   },
   "dependencies": {
     "next": "^15.5.22",

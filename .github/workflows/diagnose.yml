@@ -1,0 +1,29 @@
+name: Diagnose selectors
+
+# Manual only. Prints a structural summary of a chain's live pages to the log so
+# selectors can be written from real markup rather than guessed. Writes nothing.
+on:
+  workflow_dispatch:
+    inputs:
+      chain:
+        description: 'Chain to diagnose'
+        type: choice
+        options: [dominos]
+        default: dominos
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Diagnose
+        run: npx tsx scrapers/diagnose.ts ${{ inputs.chain }}
