@@ -40,6 +40,22 @@ export const pricingBasisEnum = pgEnum('pricing_basis', ['advertised', 'derived_
 export const discountScopeEnum = pgEnum('discount_scope', ['pizza', 'order']);
 export const scrapeStatusEnum = pgEnum('scrape_status', ['ok', 'partial', 'failed']);
 
+/**
+ * Where a fact came from, and therefore how much to trust it.
+ *
+ * `scraped` is read by our own scraper from the chain's own page — the only provenance
+ * the app should ultimately rely on. `manual_primary` is hand-entered from the chain's
+ * own page. `manual_secondary` is hand-entered from a third party (a coupon aggregator,
+ * a menu-listing site); these disagree with each other constantly, especially on
+ * diameters, so rows carrying it must be visibly marked in the UI and are seed data at
+ * best.
+ */
+export const provenanceEnum = pgEnum('provenance', [
+  'scraped',
+  'manual_primary',
+  'manual_secondary',
+]);
+
 /** D5: every priced row records the market it was observed in. */
 export const DEFAULT_PRICING_LOCALE = 'san-diego-ca';
 
@@ -68,6 +84,8 @@ export const crustOptions = pgTable(
     crustName: text('crust_name').notNull(),
     crustClass: crustClassEnum('crust_class').notNull(),
     observedUpchargeUsd: numeric('observed_upcharge_usd', { precision: 6, scale: 2 }),
+    provenance: provenanceEnum('provenance').notNull().default('scraped'),
+    provenanceNote: text('provenance_note'),
     sourceUrl: text('source_url').notNull(),
     firstSeen: timestamp('first_seen', { withTimezone: true }).notNull().defaultNow(),
     lastSeen: timestamp('last_seen', { withTimezone: true }).notNull().defaultNow(),
@@ -87,6 +105,8 @@ export const crustSizeAvailability = pgTable(
       .references(() => crustOptions.id),
     diameterIn: numeric('diameter_in', { precision: 4, scale: 2 }).notNull(),
     orderable: boolean('orderable').notNull(),
+    provenance: provenanceEnum('provenance').notNull().default('scraped'),
+    provenanceNote: text('provenance_note'),
     sourceUrl: text('source_url').notNull(),
     observedAt: timestamp('observed_at', { withTimezone: true }).notNull().defaultNow(),
   },
@@ -116,6 +136,8 @@ export const sizeObservations = pgTable(
     diameterIn: numeric('diameter_in', { precision: 4, scale: 2 }),
     lengthIn: numeric('length_in', { precision: 4, scale: 2 }),
     widthIn: numeric('width_in', { precision: 4, scale: 2 }),
+    provenance: provenanceEnum('provenance').notNull().default('scraped'),
+    provenanceNote: text('provenance_note'),
     sourceUrl: text('source_url').notNull(),
     observedAt: timestamp('observed_at', { withTimezone: true }).notNull().defaultNow(),
   },
@@ -144,6 +166,8 @@ export const menuPizzaPrices = pgTable('menu_pizza_prices', {
   toppingCount: integer('topping_count'),
   menuPriceUsd: numeric('menu_price_usd', { precision: 6, scale: 2 }).notNull(),
   pricingLocale: text('pricing_locale').notNull().default(DEFAULT_PRICING_LOCALE),
+  provenance: provenanceEnum('provenance').notNull().default('scraped'),
+  provenanceNote: text('provenance_note'),
   sourceUrl: text('source_url').notNull(),
   observedAt: timestamp('observed_at', { withTimezone: true }).notNull().defaultNow(),
 });
@@ -158,6 +182,8 @@ export const componentValues = pgTable('component_values', {
   descriptor: text('descriptor').notNull(),
   menuPriceUsd: numeric('menu_price_usd', { precision: 6, scale: 2 }).notNull(),
   pricingLocale: text('pricing_locale').notNull().default(DEFAULT_PRICING_LOCALE),
+  provenance: provenanceEnum('provenance').notNull().default('scraped'),
+  provenanceNote: text('provenance_note'),
   sourceUrl: text('source_url').notNull(),
   observedAt: timestamp('observed_at', { withTimezone: true }).notNull().defaultNow(),
 });
@@ -174,6 +200,8 @@ export const deliveryFeeObservations = pgTable('delivery_fee_observations', {
     .references(() => chains.id),
   feeUsd: numeric('fee_usd', { precision: 6, scale: 2 }).notNull(),
   pricingLocale: text('pricing_locale').notNull().default(DEFAULT_PRICING_LOCALE),
+  provenance: provenanceEnum('provenance').notNull().default('scraped'),
+  provenanceNote: text('provenance_note'),
   sourceUrl: text('source_url').notNull(),
   observedAt: timestamp('observed_at', { withTimezone: true }).notNull().defaultNow(),
 });
@@ -209,6 +237,8 @@ export const deals = pgTable(
     promoCode: text('promo_code'),
     validFrom: date('valid_from'),
     validThrough: date('valid_through'),
+    provenance: provenanceEnum('provenance').notNull().default('scraped'),
+    provenanceNote: text('provenance_note'),
     sourceUrl: text('source_url').notNull(),
     national: boolean('national').notNull().default(true),
 

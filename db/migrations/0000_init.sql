@@ -4,6 +4,7 @@ CREATE TYPE "public"."discount_scope" AS ENUM('pizza', 'order');--> statement-br
 CREATE TYPE "public"."fulfillment" AS ENUM('carryout', 'delivery');--> statement-breakpoint
 CREATE TYPE "public"."pizza_shape" AS ENUM('round', 'rect');--> statement-breakpoint
 CREATE TYPE "public"."pricing_basis" AS ENUM('advertised', 'derived_from_discount');--> statement-breakpoint
+CREATE TYPE "public"."provenance" AS ENUM('scraped', 'manual_primary', 'manual_secondary');--> statement-breakpoint
 CREATE TYPE "public"."scrape_status" AS ENUM('ok', 'partial', 'failed');--> statement-breakpoint
 CREATE TYPE "public"."topping_policy" AS ENUM('exact', 'up_to', 'unlimited', 'specialty_fixed');--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "chains" (
@@ -22,6 +23,8 @@ CREATE TABLE IF NOT EXISTS "component_values" (
 	"descriptor" text NOT NULL,
 	"menu_price_usd" numeric(6, 2) NOT NULL,
 	"pricing_locale" text DEFAULT 'san-diego-ca' NOT NULL,
+	"provenance" "provenance" DEFAULT 'scraped' NOT NULL,
+	"provenance_note" text,
 	"source_url" text NOT NULL,
 	"observed_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -32,6 +35,8 @@ CREATE TABLE IF NOT EXISTS "crust_options" (
 	"crust_name" text NOT NULL,
 	"crust_class" "crust_class" NOT NULL,
 	"observed_upcharge_usd" numeric(6, 2),
+	"provenance" "provenance" DEFAULT 'scraped' NOT NULL,
+	"provenance_note" text,
 	"source_url" text NOT NULL,
 	"first_seen" timestamp with time zone DEFAULT now() NOT NULL,
 	"last_seen" timestamp with time zone DEFAULT now() NOT NULL,
@@ -43,6 +48,8 @@ CREATE TABLE IF NOT EXISTS "crust_size_availability" (
 	"crust_option_id" integer NOT NULL,
 	"diameter_in" numeric(4, 2) NOT NULL,
 	"orderable" boolean NOT NULL,
+	"provenance" "provenance" DEFAULT 'scraped' NOT NULL,
+	"provenance_note" text,
 	"source_url" text NOT NULL,
 	"observed_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "crust_size_availability_uq" UNIQUE("crust_option_id","diameter_in")
@@ -99,6 +106,8 @@ CREATE TABLE IF NOT EXISTS "deals" (
 	"promo_code" text,
 	"valid_from" date,
 	"valid_through" date,
+	"provenance" "provenance" DEFAULT 'scraped' NOT NULL,
+	"provenance_note" text,
 	"source_url" text NOT NULL,
 	"national" boolean DEFAULT true NOT NULL,
 	"first_seen" timestamp with time zone DEFAULT now() NOT NULL,
@@ -116,6 +125,8 @@ CREATE TABLE IF NOT EXISTS "delivery_fee_observations" (
 	"chain_id" integer NOT NULL,
 	"fee_usd" numeric(6, 2) NOT NULL,
 	"pricing_locale" text DEFAULT 'san-diego-ca' NOT NULL,
+	"provenance" "provenance" DEFAULT 'scraped' NOT NULL,
+	"provenance_note" text,
 	"source_url" text NOT NULL,
 	"observed_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -128,6 +139,8 @@ CREATE TABLE IF NOT EXISTS "menu_pizza_prices" (
 	"topping_count" integer,
 	"menu_price_usd" numeric(6, 2) NOT NULL,
 	"pricing_locale" text DEFAULT 'san-diego-ca' NOT NULL,
+	"provenance" "provenance" DEFAULT 'scraped' NOT NULL,
+	"provenance_note" text,
 	"source_url" text NOT NULL,
 	"observed_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -152,6 +165,8 @@ CREATE TABLE IF NOT EXISTS "size_observations" (
 	"diameter_in" numeric(4, 2),
 	"length_in" numeric(4, 2),
 	"width_in" numeric(4, 2),
+	"provenance" "provenance" DEFAULT 'scraped' NOT NULL,
+	"provenance_note" text,
 	"source_url" text NOT NULL,
 	"observed_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "size_observations_dims_match_shape" CHECK (("size_observations"."shape" = 'round' AND "size_observations"."diameter_in" IS NOT NULL AND "size_observations"."length_in" IS NULL AND "size_observations"."width_in" IS NULL)

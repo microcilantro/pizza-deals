@@ -412,7 +412,24 @@ Flagging these now rather than discovering them in step 5.
    crediting a side at full menu price against a discounted order double-counts.
    `discount_applies_to` records the scope; order-level discounts on bundles are marked
    unrankable in v1 rather than modeled wrong.
-10. **National-only discipline.** Chains render prices against a default or geolocated
+10. **"Any crust" offers.** Domino's runs a "$9.99 Large, Any Crust, Any Toppings"
+    promotion. If a specialty crust is orderable at the same price, then the specialty
+    premium is *zero for that offer* — which breaks the assumption behind segmenting
+    specialty crusts out. Modeled as the standard variant only, with a note. Properly it
+    should produce one row per eligible crust class, which needs the scraper to tell us
+    which crusts qualify. See Q7.
+11. **"Second pizza for $2" offers.** Papa John's runs buy-one-get-second-for-$2. There
+    is no total price (it depends on the first pizza's menu price) and no percentage, so
+    the `deals_price_or_discount` CHECK rejects it outright. Currently unrepresentable
+    and omitted from the seed. See Q8.
+12. **Day-of-week restrictions.** Domino's $7.99 carryout deal is Monday–Thursday only.
+    The schema has `valid_from`/`valid_through` but no recurring-day concept, so the
+    restriction is captured only as prose in `provenance_note`. A deal that is not
+    available today still ranks as if it were.
+13. **Floor pricing.** "Large Tavern Recipe as low as $12" advertises a floor, not a
+    price. Stored as $12 with a note; the real price may be higher for any given
+    configuration, which biases the ranking in the deal's favor.
+14. **National-only discipline.** Chains render prices against a default or geolocated
    store even on national pages. The scraper needs a fixed reference locale so prices
    are consistent day-over-day, and anything the page marks as store-specific gets
    dropped. Worth deciding the reference locale explicitly — see Q4.
@@ -457,11 +474,25 @@ and component values. Capturing base pizza menu prices too makes these deals ran
 `pricing_basis = 'derived_from_discount'` and an assumption naming the menu price used.
 If the menu price is missing, the deal is unrankable rather than guessed.
 
+**D7 — Provenance is a column, not a convention.** Added while seeding. Every fact table
+and `deals` carries `provenance` (`scraped` | `manual_primary` | `manual_secondary`) and
+a free-text `provenance_note`. Seed rows are `manual_secondary`; the scrapers write
+`scraped`. The UI must visibly mark anything that is not `scraped`.
+
 ## 5. Still open
 
-Nothing blocking. Items deferred by decision: per-market pricing beyond San Diego (D5),
-and order-level percentage discounts that span pizza and non-pizza items (see edge case
-9 below).
+**Q7 — "Any crust" offers** (edge case 10). Emit one deal row per eligible crust class,
+or keep one standard row and note the rest? One row per class is more correct — a
+specialty crust at no upcharge is genuinely a strong offer and belongs in the specialty
+ranking — but it needs the scraper to enumerate qualifying crusts, and it makes one
+advertised offer appear as three rows.
+
+**Q8 — "Second pizza for $2" offers** (edge case 11). Representable by adding a
+`second_item_price_usd` and computing the total from the first pizza's menu price, or
+left out of scope. They are common enough at Papa John's to be a visible gap.
+
+Deferred by decision: per-market pricing beyond San Diego (D5), and order-level
+percentage discounts spanning pizza and non-pizza items (edge case 9).
 
 ---
 

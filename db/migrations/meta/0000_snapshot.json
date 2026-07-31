@@ -1,5 +1,5 @@
 {
-  "id": "71818089-300e-4b63-a5c5-12b9c4d31037",
+  "id": "bc111d94-0ad7-4452-a281-f47477199d0c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -96,6 +96,20 @@
           "notNull": true,
           "default": "'san-diego-ca'"
         },
+        "provenance": {
+          "name": "provenance",
+          "type": "provenance",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'scraped'"
+        },
+        "provenance_note": {
+          "name": "provenance_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "source_url": {
           "name": "source_url",
           "type": "text",
@@ -164,6 +178,20 @@
         "observed_upcharge_usd": {
           "name": "observed_upcharge_usd",
           "type": "numeric(6, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provenance": {
+          "name": "provenance",
+          "type": "provenance",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'scraped'"
+        },
+        "provenance_note": {
+          "name": "provenance_note",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -246,6 +274,20 @@
           "type": "boolean",
           "primaryKey": false,
           "notNull": true
+        },
+        "provenance": {
+          "name": "provenance",
+          "type": "provenance",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'scraped'"
+        },
+        "provenance_note": {
+          "name": "provenance_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "source_url": {
           "name": "source_url",
@@ -678,6 +720,20 @@
           "primaryKey": false,
           "notNull": false
         },
+        "provenance": {
+          "name": "provenance",
+          "type": "provenance",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'scraped'"
+        },
+        "provenance_note": {
+          "name": "provenance_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "source_url": {
           "name": "source_url",
           "type": "text",
@@ -796,6 +852,20 @@
           "notNull": true,
           "default": "'san-diego-ca'"
         },
+        "provenance": {
+          "name": "provenance",
+          "type": "provenance",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'scraped'"
+        },
+        "provenance_note": {
+          "name": "provenance_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "source_url": {
           "name": "source_url",
           "type": "text",
@@ -878,6 +948,20 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'san-diego-ca'"
+        },
+        "provenance": {
+          "name": "provenance",
+          "type": "provenance",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'scraped'"
+        },
+        "provenance_note": {
+          "name": "provenance_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "source_url": {
           "name": "source_url",
@@ -1059,6 +1143,20 @@
           "primaryKey": false,
           "notNull": false
         },
+        "provenance": {
+          "name": "provenance",
+          "type": "provenance",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'scraped'"
+        },
+        "provenance_note": {
+          "name": "provenance_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "source_url": {
           "name": "source_url",
           "type": "text",
@@ -1163,6 +1261,15 @@
       "values": [
         "advertised",
         "derived_from_discount"
+      ]
+    },
+    "public.provenance": {
+      "name": "provenance",
+      "schema": "public",
+      "values": [
+        "scraped",
+        "manual_primary",
+        "manual_secondary"
       ]
     },
     "public.scrape_status": {
