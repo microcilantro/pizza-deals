@@ -44,9 +44,78 @@ const WALL_MARKERS = [
   'enable javascript',
   'something went wrong',
   'choose a store',
+  'choose your location',
   'find a store',
   'enter your address',
+  'start your order',
 ];
+
+
+/** Runs in the page. Plain JS source — see the note in describePage for why. */
+const DOM_SUMMARY_JS = `(() => {
+  var all = Array.prototype.slice.call(document.querySelectorAll('*'));
+
+  var dataAttrs = {};
+  for (var i = 0; i < all.length; i++) {
+    var attrs = all[i].attributes;
+    for (var j = 0; j < attrs.length; j++) {
+      var a = attrs[j];
+      if (a.name.indexOf('data-') !== 0) continue;
+      if (dataAttrs[a.name]) dataAttrs[a.name].count++;
+      else dataAttrs[a.name] = { count: 1, sample: String(a.value).slice(0, 50) };
+    }
+  }
+
+  function describe(node, depth) {
+    var parts = [];
+    for (var d = 0; d < depth && node; d++) {
+      var id = node.id ? '#' + node.id : '';
+      var cn = typeof node.className === 'string' ? node.className.trim() : '';
+      var cls = cn ? '.' + cn.split(/\\s+/).slice(0, 3).join('.') : '';
+      var data = '';
+      var at = node.attributes || [];
+      for (var k = 0; k < at.length; k++) {
+        if (at[k].name.indexOf('data-') === 0) data += '[' + at[k].name + '="' + String(at[k].value).slice(0, 28) + '"]';
+      }
+      parts.unshift(node.tagName.toLowerCase() + id + cls + data);
+      node = node.parentElement;
+    }
+    return parts.join(' > ');
+  }
+
+  var money = [];
+  for (var m = 0; m < all.length && money.length < 25; m++) {
+    var el = all[m];
+    if (el.children.length > 0) continue;
+    var text = (el.textContent || '').replace(/\\s+/g, ' ').trim();
+    if (!/\\$\\s?\\d/.test(text) || text.length > 60) continue;
+    money.push(text + '  <<  ' + describe(el, 4));
+  }
+
+  var repeats = [];
+  for (var r = 0; r < all.length && repeats.length < 20; r++) {
+    var p = all[r];
+    var kids = Array.prototype.slice.call(p.children);
+    if (kids.length < 3) continue;
+    function sig(k) {
+      var c = typeof k.className === 'string' ? k.className.trim().split(/\\s+/)[0] || '' : '';
+      return k.tagName + '.' + c;
+    }
+    var first = sig(kids[0]);
+    var same = kids.filter(function (k) { return sig(k) === first; }).length;
+    if (same < 3 || same / kids.length < 0.8) continue;
+    var pcn = typeof p.className === 'string' ? p.className.trim().split(/\\s+/).slice(0, 2).join('.') : '';
+    repeats.push(same + 'x ' + first + '  inside  ' + p.tagName.toLowerCase() + (pcn ? '.' + pcn : '') + (p.id ? '#' + p.id : ''));
+  }
+
+  var attrLines = Object.keys(dataAttrs)
+    .map(function (n) { return { n: n, c: dataAttrs[n].count, s: dataAttrs[n].sample }; })
+    .sort(function (a, b) { return b.c - a.c; })
+    .slice(0, 30)
+    .map(function (e) { return String(e.c) + '  ' + e.n + ' = "' + e.s + '"'; });
+
+  return { dataAttrs: attrLines, money: money, repeats: repeats, totalElements: all.length };
+})()`;
 
 async function describePage(page: Page, label: string): Promise<void> {
   console.log(`\n${'='.repeat(78)}\n== ${label.toUpperCase()}\n${'='.repeat(78)}`);
@@ -74,74 +143,18 @@ async function describePage(page: Page, label: string): Promise<void> {
   }
 
   // 3/4. What does the DOM actually look like?
-  const summary = await page.evaluate(() => {
-    const all = Array.from(document.querySelectorAll<HTMLElement>('*'));
-
-    // Every distinct data-* attribute name, with a sample value and a count.
-    const dataAttrs = new Map<string, { count: number; sample: string }>();
-    for (const el of all) {
-      for (const attr of Array.from(el.attributes)) {
-        if (!attr.name.startsWith('data-')) continue;
-        const entry = dataAttrs.get(attr.name);
-        if (entry) entry.count += 1;
-        else dataAttrs.set(attr.name, { count: 1, sample: attr.value.slice(0, 50) });
-      }
-    }
-
-    // Elements whose own text carries a price, with what identifies them.
-    const money: string[] = [];
-    for (const el of all) {
-      if (el.children.length > 0) continue; // leaf nodes only
-      const text = (el.textContent ?? '').replace(/\s+/g, ' ').trim();
-      if (!/\$\s?\d/.test(text) || text.length > 60) continue;
-
-      const path: string[] = [];
-      let node: HTMLElement | null = el;
-      for (let i = 0; i < 4 && node; i++) {
-        const id = node.id ? `#${node.id}` : '';
-        const cls = node.className && typeof node.className === 'string'
-          ? `.${node.className.trim().split(/\s+/).slice(0, 3).join('.')}`
-          : '';
-        const data = Array.from(node.attributes)
-          .filter((a) => a.name.startsWith('data-'))
-          .map((a) => `[${a.name}="${a.value.slice(0, 28)}"]`)
-          .join('');
-        path.unshift(`${node.tagName.toLowerCase()}${id}${cls}${data}`);
-        node = node.parentElement;
-      }
-      money.push(`${text}  <<  ${path.join(' > ')}`);
-      if (money.length >= 25) break;
-    }
-
-    // Repeated sibling structures — the shape a card list makes.
-    const repeats: string[] = [];
-    for (const el of all) {
-      const kids = Array.from(el.children) as HTMLElement[];
-      if (kids.length < 3) continue;
-      const sig = (k: HTMLElement) =>
-        `${k.tagName}.${typeof k.className === 'string' ? k.className.trim().split(/\s+/)[0] ?? '' : ''}`;
-      const first = sig(kids[0]!);
-      const same = kids.filter((k) => sig(k) === first).length;
-      if (same < 3 || same / kids.length < 0.8) continue;
-
-      const parentCls =
-        typeof el.className === 'string' ? el.className.trim().split(/\s+/).slice(0, 2).join('.') : '';
-      repeats.push(
-        `${same}x ${first}  inside  ${el.tagName.toLowerCase()}${parentCls ? `.${parentCls}` : ''}${el.id ? `#${el.id}` : ''}`,
-      );
-      if (repeats.length >= 20) break;
-    }
-
-    return {
-      dataAttrs: [...dataAttrs.entries()]
-        .sort((a, b) => b[1].count - a[1].count)
-        .slice(0, 30)
-        .map(([name, v]) => `${String(v.count).padStart(5)}  ${name} = "${v.sample}"`),
-      money,
-      repeats,
-      totalElements: all.length,
-    };
-  });
+  /*
+   * Passed as a source string, not a closure. tsx compiles this file with esbuild's
+   * keepNames enabled, which rewrites function declarations to call a `__name` helper —
+   * that helper does not exist inside the page, so a serialized closure dies with
+   * "__name is not defined". A string is handed to the browser untouched.
+   */
+  const summary = (await page.evaluate(DOM_SUMMARY_JS)) as {
+    dataAttrs: string[];
+    money: string[];
+    repeats: string[];
+    totalElements: number;
+  };
 
   console.log(`\n-- dom size: ${summary.totalElements} elements --`);
 
