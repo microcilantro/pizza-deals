@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "capturedAt": "2026-08-01T20:37:34.636Z",
+  "capturedAt": "2026-08-01T21:44:47.131Z",
   "pricingLocale": "san-diego-ca",
   "chains": [
     {
@@ -27,7 +27,7 @@
       "chain": "dominos",
       "displayName": "Domino's",
       "status": "partial",
-      "lastSuccessfulAt": "2026-08-01T20:37:34.636Z",
+      "lastSuccessfulAt": "2026-08-01T21:44:47.131Z",
       "errors": [],
       "unparsed": [
         {
@@ -601,8 +601,8 @@
         "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
       ],
       "firstSeen": "2026-07-31T14:41:39.594Z",
-      "lastSeen": "2026-08-01T20:37:34.636Z",
-      "lastVerifiedAt": "2026-08-01T20:37:34.636Z",
+      "lastSeen": "2026-08-01T21:44:47.131Z",
+      "lastVerifiedAt": "2026-08-01T21:44:47.131Z",
       "active": true,
       "stale": false,
       "priceHistory": [
@@ -646,8 +646,8 @@
         "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
       ],
       "firstSeen": "2026-07-31T14:41:39.594Z",
-      "lastSeen": "2026-08-01T20:37:34.636Z",
-      "lastVerifiedAt": "2026-08-01T20:37:34.636Z",
+      "lastSeen": "2026-08-01T21:44:47.131Z",
+      "lastVerifiedAt": "2026-08-01T21:44:47.131Z",
       "active": true,
       "stale": false,
       "priceHistory": [
@@ -690,8 +690,8 @@
         "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
       ],
       "firstSeen": "2026-08-01T20:30:33.095Z",
-      "lastSeen": "2026-08-01T20:37:34.636Z",
-      "lastVerifiedAt": "2026-08-01T20:37:34.636Z",
+      "lastSeen": "2026-08-01T21:44:47.131Z",
+      "lastVerifiedAt": "2026-08-01T21:44:47.131Z",
       "active": true,
       "stale": false,
       "priceHistory": [
@@ -734,8 +734,8 @@
         "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
       ],
       "firstSeen": "2026-08-01T20:30:33.095Z",
-      "lastSeen": "2026-08-01T20:37:34.636Z",
-      "lastVerifiedAt": "2026-08-01T20:37:34.636Z",
+      "lastSeen": "2026-08-01T21:44:47.131Z",
+      "lastVerifiedAt": "2026-08-01T21:44:47.131Z",
       "active": true,
       "stale": false,
       "priceHistory": [
@@ -780,8 +780,8 @@
         "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
       ],
       "firstSeen": "2026-07-31T14:41:39.594Z",
-      "lastSeen": "2026-08-01T20:37:34.636Z",
-      "lastVerifiedAt": "2026-08-01T20:37:34.636Z",
+      "lastSeen": "2026-08-01T21:44:47.131Z",
+      "lastVerifiedAt": "2026-08-01T21:44:47.131Z",
       "active": true,
       "stale": false,
       "priceHistory": [
@@ -826,8 +826,8 @@
         "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
       ],
       "firstSeen": "2026-07-31T14:41:39.594Z",
-      "lastSeen": "2026-08-01T20:37:34.636Z",
-      "lastVerifiedAt": "2026-08-01T20:37:34.636Z",
+      "lastSeen": "2026-08-01T21:44:47.131Z",
+      "lastVerifiedAt": "2026-08-01T21:44:47.131Z",
       "active": true,
       "stale": false,
       "priceHistory": [
@@ -870,8 +870,8 @@
         "No crust named in the offer; assumed Hand Tossed, the default crust."
       ],
       "firstSeen": "2026-07-31T13:49:38.330Z",
-      "lastSeen": "2026-08-01T20:37:34.636Z",
-      "lastVerifiedAt": "2026-08-01T20:37:34.636Z",
+      "lastSeen": "2026-08-01T21:44:47.131Z",
+      "lastVerifiedAt": "2026-08-01T21:44:47.131Z",
       "active": true,
       "stale": false,
       "priceHistory": [
@@ -912,8 +912,8 @@
       "provenance": "scraped",
       "notes": [],
       "firstSeen": "2026-07-31T13:49:38.330Z",
-      "lastSeen": "2026-08-01T20:37:34.636Z",
-      "lastVerifiedAt": "2026-08-01T20:37:34.636Z",
+      "lastSeen": "2026-08-01T21:44:47.131Z",
+      "lastVerifiedAt": "2026-08-01T21:44:47.131Z",
       "active": true,
       "stale": false,
       "priceHistory": [
@@ -958,8 +958,8 @@
         "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
       ],
       "firstSeen": "2026-07-31T14:41:39.594Z",
-      "lastSeen": "2026-08-01T20:37:34.636Z",
-      "lastVerifiedAt": "2026-08-01T20:37:34.636Z",
+      "lastSeen": "2026-08-01T21:44:47.131Z",
+      "lastVerifiedAt": "2026-08-01T21:44:47.131Z",
       "active": true,
       "stale": false,
       "priceHistory": [
@@ -1004,8 +1004,8 @@
         "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
       ],
       "firstSeen": "2026-07-31T14:41:39.594Z",
-      "lastSeen": "2026-08-01T20:37:34.636Z",
-      "lastVerifiedAt": "2026-08-01T20:37:34.636Z",
+      "lastSeen": "2026-08-01T21:44:47.131Z",
+      "lastVerifiedAt": "2026-08-01T21:44:47.131Z",
       "active": true,
       "stale": false,
       "priceHistory": [
@@ -1049,8 +1049,8 @@
         "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
       ],
       "firstSeen": "2026-07-31T14:41:39.594Z",
-      "lastSeen": "2026-08-01T20:37:34.636Z",
-      "lastVerifiedAt": "2026-08-01T20:37:34.636Z",
+      "lastSeen": "2026-08-01T21:44:47.131Z",
+      "lastVerifiedAt": "2026-08-01T21:44:47.131Z",
       "active": true,
       "stale": false,
       "priceHistory": [
@@ -1094,8 +1094,8 @@
         "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
       ],
       "firstSeen": "2026-07-31T14:41:39.594Z",
-      "lastSeen": "2026-08-01T20:37:34.636Z",
-      "lastVerifiedAt": "2026-08-01T20:37:34.636Z",
+      "lastSeen": "2026-08-01T21:44:47.131Z",
+      "lastVerifiedAt": "2026-08-01T21:44:47.131Z",
       "active": true,
       "stale": false,
       "priceHistory": [
@@ -1139,8 +1139,8 @@
         "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
       ],
       "firstSeen": "2026-07-31T14:41:39.594Z",
-      "lastSeen": "2026-08-01T20:37:34.636Z",
-      "lastVerifiedAt": "2026-08-01T20:37:34.636Z",
+      "lastSeen": "2026-08-01T21:44:47.131Z",
+      "lastVerifiedAt": "2026-08-01T21:44:47.131Z",
       "active": true,
       "stale": false,
       "priceHistory": [
@@ -1184,8 +1184,8 @@
         "The offer states no carryout/delivery restriction, so it is treated as available both ways. The price shown excludes any delivery fee."
       ],
       "firstSeen": "2026-07-31T14:41:39.594Z",
-      "lastSeen": "2026-08-01T20:37:34.636Z",
-      "lastVerifiedAt": "2026-08-01T20:37:34.636Z",
+      "lastSeen": "2026-08-01T21:44:47.131Z",
+      "lastVerifiedAt": "2026-08-01T21:44:47.131Z",
       "active": true,
       "stale": false,
       "priceHistory": [
