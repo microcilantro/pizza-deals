@@ -21,9 +21,31 @@
 import { chromium } from 'playwright';
 import { createSession } from './session';
 
-const TARGETS: Record<string, { origin: string; url: string }> = {
-  papa_johns: { origin: 'https://www.papajohns.com', url: 'https://www.papajohns.com/order/deals' },
-  pizza_hut: { origin: 'https://www.pizzahut.com', url: 'https://www.pizzahut.com/deals' },
+/**
+ * Several candidate paths per chain. Papa John's robots.txt disallows /order/deals, so
+ * the first question is not "which endpoint serves the data" but "what are we permitted
+ * to read at all" — and a disallow is a stop, never something to work around.
+ */
+const TARGETS: Record<string, { origin: string; candidates: string[] }> = {
+  papa_johns: {
+    origin: 'https://www.papajohns.com',
+    candidates: [
+      'https://www.papajohns.com/order/deals',
+      'https://www.papajohns.com/deals',
+      'https://www.papajohns.com/specials',
+      'https://www.papajohns.com/order/menu',
+      'https://www.papajohns.com/',
+    ],
+  },
+  pizza_hut: {
+    origin: 'https://www.pizzahut.com',
+    candidates: [
+      'https://www.pizzahut.com/deals',
+      'https://www.pizzahut.com/menu/deals',
+      'https://www.pizzahut.com/menu',
+      'https://www.pizzahut.com/',
+    ],
+  },
 };
 
 const INCHES = /(\d{1,2}(?:\.\d)?)\s*(?:"|''|inch(?:es)?|in\b)/i;
@@ -59,7 +81,25 @@ async function main() {
 
   try {
     await session.loadRobots(target.origin);
-    const page = await session.open(target.url);
+
+    // Report the whole permission picture before touching anything.
+    console.log(`\n== ROBOTS.TXT (${target.origin}) ==`);
+    const allowed: string[] = [];
+    for (const candidate of target.candidates) {
+      const ok = session.isAllowed(candidate);
+      console.log(`  ${ok ? 'ALLOWED ' : 'DISALLOW'}  ${candidate}`);
+      if (ok) allowed.push(candidate);
+    }
+
+    if (allowed.length === 0) {
+      console.log('\n!! Every candidate path is disallowed by robots.txt.');
+      console.log('!! This chain cannot be scraped from these pages. Not a bug to fix.');
+      return;
+    }
+
+    const chosen = allowed[0]!;
+    console.log(`\nusing first allowed path: ${chosen}`);
+    const page = await session.open(chosen);
 
     page.on('response', (response) => {
       const type = response.headers()['content-type'] ?? '';
@@ -94,6 +134,7 @@ async function main() {
     });
 
     // Deal lists load lazily; give the app time to make its calls.
+    void 0;
     await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => {});
     await page.waitForTimeout(6_000);
 
