@@ -343,3 +343,23 @@ describe('parseDealCard', () => {
     expect(unparsed!.reason).toMatch(/carryout vs delivery/i);
   });
 });
+
+describe('stuffed crust', () => {
+  it('is specialty, not standard', () => {
+    // This was a live miss: "Medium 2-Topping Parmesan Stuffed Crust Pizza" was scraped
+    // and filed as Hand Tossed, putting a specialty crust in the standard ranking —
+    // exactly the comparison error the crust dimension exists to prevent.
+    expect(parseCrust('Medium 2-Topping Parmesan Stuffed Crust Pizza')).toEqual({
+      name: 'Stuffed Crust',
+      crustClass: 'specialty',
+    });
+    expect(parseCrust('Large Epic Stuffed Crust')).toEqual({
+      name: 'Epic Stuffed Crust',
+      crustClass: 'specialty',
+    });
+  });
+
+  it('still reads plain hand tossed as standard', () => {
+    expect(parseCrust('Large Hand Tossed Pizza')?.crustClass).toBe('standard');
+  });
+});

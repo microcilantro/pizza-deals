@@ -8,13 +8,13 @@ on:
       mode:
         description: 'dom = rendered page structure, api = ordering endpoints'
         type: choice
-        options: [dom, api]
-        default: dom
+        options: [dom, api, network]
+        default: network
       chain:
-        description: 'Chain to diagnose (dom mode only)'
+        description: 'Chain to diagnose (dom/network modes)'
         type: choice
-        options: [dominos]
-        default: dominos
+        options: [dominos, papa_johns, pizza_hut]
+        default: papa_johns
 
 permissions:
   contents: read
@@ -37,3 +37,7 @@ jobs:
       - name: Diagnose ordering endpoints
         if: inputs.mode == 'api'
         run: npx tsx scrapers/diagnose-api.ts
+
+      - name: Diagnose network calls
+        if: inputs.mode == 'network'
+        run: npx tsx scrapers/diagnose-network.ts ${{ inputs.chain }}

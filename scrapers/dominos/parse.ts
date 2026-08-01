@@ -22,6 +22,11 @@ export interface ParseOutcome {
 
 /** Domino's crust names, mapped to our three classes. */
 const CRUST_CLASSES: { pattern: RegExp; name: string; crustClass: CrustClass }[] = [
+  // Order matters: the most specific stuffed variant must win, or "Epic Stuffed Crust"
+  // is swallowed by the generic pattern. Both are specialty, so only the displayed name
+  // differs — but a wrong name in the UI is still a wrong name.
+  { pattern: /epic stuffed/i, name: 'Epic Stuffed Crust', crustClass: 'specialty' },
+  { pattern: /stuffed crust/i, name: 'Stuffed Crust', crustClass: 'specialty' },
   { pattern: /hand[\s-]?tossed/i, name: 'Hand Tossed', crustClass: 'standard' },
   { pattern: /crunchy thin|thin crust/i, name: 'Crunchy Thin', crustClass: 'thin' },
   { pattern: /brooklyn/i, name: 'Brooklyn Style', crustClass: 'specialty' },
