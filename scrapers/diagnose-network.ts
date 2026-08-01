@@ -97,9 +97,26 @@ async function main() {
       return;
     }
 
-    const chosen = allowed[0]!;
-    console.log(`\nusing first allowed path: ${chosen}`);
-    const page = await session.open(chosen);
+    // Try allowed paths in order until one actually exists — the first allowed path may
+    // simply 404, which tells us nothing about where the deals live.
+    let page = null as Awaited<ReturnType<typeof session.open>> | null;
+    for (const candidate of allowed) {
+      const attempt = await session.open(candidate);
+      const title = await attempt.title();
+      if (/404|not found/i.test(title)) {
+        console.log(`  ${candidate} -> 404 (${title.slice(0, 50)}), trying next`);
+        await attempt.close();
+        continue;
+      }
+      console.log(`\nusing: ${candidate}`);
+      page = attempt;
+      break;
+    }
+
+    if (!page) {
+      console.log('\n!! Every allowed path 404s. The deal pages are behind disallowed paths.');
+      return;
+    }
 
     page.on('response', (response) => {
       const type = response.headers()['content-type'] ?? '';
