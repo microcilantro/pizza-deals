@@ -56,14 +56,30 @@ export class ScrapeSession {
   async loadRobots(origin: string): Promise<void> {
     const page = await this.context.newPage();
     try {
-      const response = await page.goto(`${origin}/robots.txt`, {
-        waitUntil: 'domcontentloaded',
-        timeout: 30_000,
-      });
-      if (!response || !response.ok()) {
-        throw new Error(`robots.txt returned ${response?.status() ?? 'no response'}`);
+      let text: string | null = null;
+
+      try {
+        const response = await page.goto(`${origin}/robots.txt`, {
+          waitUntil: 'domcontentloaded',
+          timeout: 30_000,
+        });
+        if (response?.ok()) text = await response.text();
+      } catch {
+        // Browser navigation to a text/plain file can fail for reasons unrelated to
+        // permission. Fall back to a plain fetch before concluding anything.
       }
-      this.robots = parseRobotsTxt(await response.text());
+
+      if (text === null) {
+        const response = await fetch(`${origin}/robots.txt`, {
+          headers: { 'user-agent': USER_AGENT },
+        });
+        // A 404 means no restrictions, per the RFC. Anything else unreadable is a stop.
+        if (response.status === 404) text = '';
+        else if (response.ok) text = await response.text();
+        else throw new Error(`robots.txt unreadable: HTTP ${response.status}`);
+      }
+
+      this.robots = parseRobotsTxt(text);
 
       // Honour a crawl-delay longer than our own floor; never shorten below it.
       const delay = crawlDelayFor(this.robots, USER_AGENT);
