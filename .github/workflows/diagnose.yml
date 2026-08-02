@@ -8,7 +8,7 @@ on:
       mode:
         description: 'dom = rendered page structure, api = ordering endpoints'
         type: choice
-        options: [dom, api, network]
+        options: [dom, api, network, hosts]
         default: network
       chain:
         description: 'Chain to diagnose (dom/network modes)'
@@ -41,3 +41,7 @@ jobs:
       - name: Diagnose network calls
         if: inputs.mode == 'network'
         run: npx tsx scrapers/diagnose-network.ts ${{ inputs.chain }}
+
+      - name: Probe candidate API hosts
+        if: inputs.mode == 'hosts'
+        run: npx tsx scrapers/diagnose-hosts.ts ${{ inputs.chain }}
